@@ -1,0 +1,53 @@
+CREATE DATABASE IF NOT EXISTS sistema_gestao_escolar;
+
+USE sistema_gestao_escolar;
+
+CREATE TABLE IF NOT EXISTS usuarios (
+   id INT AUTO_INCREMENT PRIMARY KEY,
+   login VARCHAR(50) NOT NULL UNIQUE,
+   senha VARCHAR(255) NOT NULL,
+   nome VARCHAR(100) NOT NULL,
+   perfil VARCHAR(20) NOT NULL DEFAULT 'ADMIN'
+);
+
+SELECT * FROM usuarios;
+
+CREATE TABLE IF NOT EXISTS turmas (
+   id INT AUTO_INCREMENT PRIMARY KEY,
+   nome VARCHAR(100) NOT NULL,
+   codigo_turma VARCHAR(20) NOT NULL UNIQUE,
+   periodo VARCHAR(20) NOT NULL
+);
+
+SELECT * FROM turmas;
+
+CREATE TABLE IF NOT EXISTS alunos (
+   id INT AUTO_INCREMENT PRIMARY KEY,
+   matricula VARCHAR(20) NOT NULL UNIQUE,
+   nome VARCHAR(100) NOT NULL,
+   id_turma INT NOT NULL,
+   FOREIGN KEY (id_turma) REFERENCES turmas(id) ON DELETE RESTRICT
+);
+
+SELECT * FROM alunos;
+
+CREATE TABLE IF NOT EXISTS notas (
+   id INT AUTO_INCREMENT PRIMARY KEY,
+   id_aluno INT NOT NULL,
+   descricao_avaliacao VARCHAR(50) NOT NULL,
+   nota DECIMAL(4,2) NOT NULL,
+   FOREIGN KEY (id_aluno) REFERENCES alunos(id) ON DELETE CASCADE
+);
+
+SELECT *FROM notas;
+
+CREATE TABLE IF NOT EXISTS logs_auditoria (
+   id INT AUTO_INCREMENT PRIMARY KEY,
+   usuario_id INT,
+   acao VARCHAR(255) NOT NULL,
+   tabela_afetada VARCHAR(50) NOT NULL,
+   data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
+);
+
+SELECT *FROM logs_auditoria;
