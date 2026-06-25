@@ -113,6 +113,7 @@ public class PainelNotas extends javax.swing.JPanel {
 
         jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
 
+        btnLancar.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnLancar.setText("Gravar Notas");
 
         jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N

@@ -13,7 +13,7 @@ import java.sql.SQLException;
 public class Conexao {
     private static String URL = "jdbc:mysql://localhost:3306/sistema_gestao_escolar";
     private static String USUARIO = "root";
-    private static String SENHA = "root";
+    private static String SENHA = "123456";
     
     public static Connection conectar(){
         try{

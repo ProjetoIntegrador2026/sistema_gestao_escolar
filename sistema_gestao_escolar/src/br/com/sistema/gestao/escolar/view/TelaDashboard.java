@@ -15,6 +15,23 @@ public class TelaDashboard extends javax.swing.JFrame {
      */
     public TelaDashboard() {
         initComponents();
+        this.setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
+
+        
+br.com.sistema.gestao.escolar.view.PainelAlunos telaAlunos = new br.com.sistema.gestao.escolar.view.PainelAlunos();
+br.com.sistema.gestao.escolar.view.PainelTurmas telaTurmas = new br.com.sistema.gestao.escolar.view.PainelTurmas();
+br.com.sistema.gestao.escolar.view.PainelNotas telaNotas = new br.com.sistema.gestao.escolar.view.PainelNotas();
+br.com.sistema.gestao.escolar.view.PainelRelatorios telaRelatorios = new br.com.sistema.gestao.escolar.view.PainelRelatorios();
+
+// 2. Painéis dentro do pnlConteudo 
+pnlConteudo.add(telaAlunos, "alunos");
+pnlConteudo.add(telaTurmas, "turmas");
+pnlConteudo.add(telaNotas, "notas");
+pnlConteudo.add(telaRelatorios, "relatorios");
+
+// 3. Tela abre por padrão quando o Dashboard iniciar
+java.awt.CardLayout cl = (java.awt.CardLayout) pnlConteudo.getLayout();
+cl.show(pnlConteudo, "alunos");
     }
 
     /**
@@ -26,29 +43,134 @@ public class TelaDashboard extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
+        pnlMenu = new javax.swing.JPanel();
+        btnMenuTurmas = new javax.swing.JButton();
+        btnMenuNotas = new javax.swing.JButton();
+        btnMenuAlunos2 = new javax.swing.JButton();
+        btnMenuRelatorios = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        pnlConteudo = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("SGE - Painel de Controle Principal");
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel1.setPreferredSize(new java.awt.Dimension(940, 556));
+        pnlMenu.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+        pnlMenu.setPreferredSize(new java.awt.Dimension(940, 556));
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 940, Short.MAX_VALUE)
+        btnMenuTurmas.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnMenuTurmas.setText("Turmas");
+        btnMenuTurmas.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnMenuTurmas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMenuTurmasActionPerformed(evt);
+            }
+        });
+
+        btnMenuNotas.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnMenuNotas.setText("Lançar Notas");
+        btnMenuNotas.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnMenuNotas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMenuNotasActionPerformed(evt);
+            }
+        });
+
+        btnMenuAlunos2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnMenuAlunos2.setText("Alunos");
+        btnMenuAlunos2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnMenuAlunos2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMenuAlunos2ActionPerformed(evt);
+            }
+        });
+
+        btnMenuRelatorios.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnMenuRelatorios.setText("Boletim");
+        btnMenuRelatorios.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnMenuRelatorios.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMenuRelatoriosActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("Menu Principal");
+
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/sistema/gestao/escolar/imagens/icon01.png"))); // NOI18N
+
+        jLabel3.setText("Versão: 1.1.1");
+
+        javax.swing.GroupLayout pnlMenuLayout = new javax.swing.GroupLayout(pnlMenu);
+        pnlMenu.setLayout(pnlMenuLayout);
+        pnlMenuLayout.setHorizontalGroup(
+            pnlMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE)
+            .addGroup(pnlMenuLayout.createSequentialGroup()
+                .addGroup(pnlMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnlMenuLayout.createSequentialGroup()
+                        .addGap(73, 73, 73)
+                        .addComponent(jLabel3))
+                    .addGroup(pnlMenuLayout.createSequentialGroup()
+                        .addGap(54, 54, 54)
+                        .addComponent(jLabel2)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(pnlMenuLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnMenuTurmas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnMenuAlunos2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnMenuNotas, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnMenuRelatorios, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(13, 13, 13))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 489, Short.MAX_VALUE)
+        pnlMenuLayout.setVerticalGroup(
+            pnlMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlMenuLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addGap(32, 32, 32)
+                .addComponent(btnMenuAlunos2, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnMenuTurmas, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnMenuNotas, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnMenuRelatorios, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 401, Short.MAX_VALUE)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel3)
+                .addContainerGap())
         );
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, -1, 489));
+        getContentPane().add(pnlMenu, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, 220, 780));
+
+        pnlConteudo.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+        pnlConteudo.setLayout(new java.awt.CardLayout());
+        getContentPane().add(pnlConteudo, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 10, 910, 780));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnMenuAlunos2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMenuAlunos2ActionPerformed
+((java.awt.CardLayout) pnlConteudo.getLayout()).show(pnlConteudo, "alunos");        // TODO add your handling code here:
+    }//GEN-LAST:event_btnMenuAlunos2ActionPerformed
+
+    private void btnMenuTurmasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMenuTurmasActionPerformed
+((java.awt.CardLayout) pnlConteudo.getLayout()).show(pnlConteudo, "turmas");        // TODO add your handling code here:
+    }//GEN-LAST:event_btnMenuTurmasActionPerformed
+
+    private void btnMenuNotasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMenuNotasActionPerformed
+((java.awt.CardLayout) pnlConteudo.getLayout()).show(pnlConteudo, "notas");        // TODO add your handling code here:
+    }//GEN-LAST:event_btnMenuNotasActionPerformed
+
+    private void btnMenuRelatoriosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMenuRelatoriosActionPerformed
+((java.awt.CardLayout) pnlConteudo.getLayout()).show(pnlConteudo, "relatorios");        // TODO add your handling code here:
+    }//GEN-LAST:event_btnMenuRelatoriosActionPerformed
 
     /**
      * @param args the command line arguments
@@ -86,6 +208,14 @@ public class TelaDashboard extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JButton btnMenuAlunos2;
+    private javax.swing.JButton btnMenuNotas;
+    private javax.swing.JButton btnMenuRelatorios;
+    private javax.swing.JButton btnMenuTurmas;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel pnlConteudo;
+    private javax.swing.JPanel pnlMenu;
     // End of variables declaration//GEN-END:variables
 }
