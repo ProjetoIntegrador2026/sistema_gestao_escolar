@@ -143,12 +143,14 @@ public class PainelRelatorios extends javax.swing.JPanel {
             while (rs.next()) {
                 String mediaGeral = rs.getString("media") != null ? rs.getString("media") : "S/ Nota";
                 String situacao = rs.getString("situacao") != null ? rs.getString("situacao") : "Pendente";
+                String frequencia = "-";
                 
                 modelo.addRow(new Object[]{
                     rs.getString("matricula"),
                     rs.getString("aluno_nome"),
                     rs.getString("turma_nome"),
                     mediaGeral,
+                    frequencia,
                     situacao
                 });
             }
