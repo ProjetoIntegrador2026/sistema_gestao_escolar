@@ -15,6 +15,7 @@ public class PainelRelatorios extends javax.swing.JPanel {
      */
     public PainelRelatorios() {
         initComponents();
+        listarBoletimNaTabela("");
     }
 
     /**
@@ -113,9 +114,55 @@ public class PainelRelatorios extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        // TODO add your handling code here:
+        String nomeBusca = txtBuscaAluno.getText().trim();
+        listarBoletimNaTabela(nomeBusca);
     }//GEN-LAST:event_btnBuscarActionPerformed
+    
+    private void listarBoletimNaTabela(String nomeBusca) {
+        javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tabelaBoletim.getModel();
+        modelo.setNumRows(0);
 
+        try {
+            
+            
+            java.sql.Connection conn = conexao.Conexao.conectar();
+            
+            String sql = "SELECT a.matricula, a.nome AS aluno_nome, t.nome AS turma_nome, " +
+                         "n.media, n.situacao " +
+                         "FROM alunos a " +
+                         "INNER JOIN turmas t ON a.id_turma = t.id " +
+                         "LEFT JOIN notas n ON a.id = n.id_aluno " +
+                         "WHERE a.nome LIKE ?";
+            
+            java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
+            
+            stmt.setString(1, "%" + nomeBusca + "%");
+            
+            java.sql.ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                String mediaGeral = rs.getString("media") != null ? rs.getString("media") : "S/ Nota";
+                String situacao = rs.getString("situacao") != null ? rs.getString("situacao") : "Pendente";
+                
+                modelo.addRow(new Object[]{
+                    rs.getString("matricula"),
+                    rs.getString("aluno_nome"),
+                    rs.getString("turma_nome"),
+                    mediaGeral,
+                    situacao
+                });
+            }
+
+            rs.close(); 
+            stmt.close(); 
+            conn.close();
+            
+        } catch (java.sql.SQLException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao gerar relatório: " + ex.getMessage());
+        }
+    }
+    
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBuscar;

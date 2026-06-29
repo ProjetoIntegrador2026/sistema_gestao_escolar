@@ -4,17 +4,24 @@
  */
 package br.com.sistema.gestao.escolar.view;
 
+import conexao.Conexao;
+
 /**
  *
  * @author LENOVO
  */
 public class PainelTurmas extends javax.swing.JPanel {
-
+   
+    private int idTurmaSelecionada = -1;
+    
+    
+    
     /**
      * Creates new form PainelTurmas
      */
     public PainelTurmas() {
         initComponents();
+        listarTurmasNaTabela();
     }
 
     /**
@@ -80,6 +87,11 @@ public class PainelTurmas extends javax.swing.JPanel {
 
         btnEditarTurma.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnEditarTurma.setText("Editar");
+        btnEditarTurma.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarTurmaActionPerformed(evt);
+            }
+        });
         add(btnEditarTurma, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 260, -1, -1));
 
         btnSalvarTurma.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -93,6 +105,11 @@ public class PainelTurmas extends javax.swing.JPanel {
 
         btnExcluirTurma.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnExcluirTurma.setText("Excluir");
+        btnExcluirTurma.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExcluirTurmaActionPerformed(evt);
+            }
+        });
         add(btnExcluirTurma, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 260, -1, -1));
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
@@ -106,6 +123,12 @@ public class PainelTurmas extends javax.swing.JPanel {
                 "ID", "Código", "Nome da Turma", "Período"
             }
         ));
+        jTable1.setShowGrid(true);
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
         if (jTable1.getColumnModel().getColumnCount() > 0) {
             jTable1.getColumnModel().getColumn(0).setPreferredWidth(50);
@@ -137,8 +160,139 @@ public class PainelTurmas extends javax.swing.JPanel {
     }//GEN-LAST:event_cbPeriodoActionPerformed
 
     private void btnSalvarTurmaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarTurmaActionPerformed
-        // TODO add your handling code here:
+        String nome = txtNomeTurma1.getText().trim();
+        String codigo = txtCodigoTurma.getText().trim();
+        String periodo = cbPeriodo.getSelectedItem().toString();
+
+        if (nome.isEmpty() || codigo.isEmpty() || periodo.equals("-")) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, preencha o nome, o código e selecione o período!");
+            return;
+        }
+
+        try {
+            
+            java.sql.Connection conn = conexao.Conexao.conectar();
+
+            String sql = "INSERT INTO turmas (codigo_turma, nome, periodo) VALUES (?, ?, ?)";
+            java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
+
+            stmt.setString(1, codigo);
+            stmt.setString(2, nome);
+            stmt.setString(3, periodo);
+
+            stmt.executeUpdate();
+            javax.swing.JOptionPane.showMessageDialog(this, "Turma cadastrada com sucesso!");
+
+            txtNomeTurma1.setText("");
+            txtCodigoTurma.setText("");
+            cbPeriodo.setSelectedIndex(0);
+
+            listarTurmasNaTabela();
+
+            stmt.close(); conn.close();
+        } catch (java.sql.SQLException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao salvar turma: " + ex.getMessage());
+        }
+
     }//GEN-LAST:event_btnSalvarTurmaActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+       int linhaSelecionada = jTable1.getSelectedRow();
+    
+        if (linhaSelecionada != -1) {
+            idTurmaSelecionada = Integer.parseInt(jTable1.getValueAt(linhaSelecionada, 0).toString());
+
+            String codigo = jTable1.getValueAt(linhaSelecionada, 1).toString();
+            String nome = jTable1.getValueAt(linhaSelecionada, 2).toString();
+            String periodo = jTable1.getValueAt(linhaSelecionada, 3).toString();
+
+            txtCodigoTurma.setText(codigo);
+            txtNomeTurma1.setText(nome);
+            cbPeriodo.setSelectedItem(periodo);
+        }                              
+
+    }//GEN-LAST:event_jTable1MouseClicked
+
+    private void btnExcluirTurmaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirTurmaActionPerformed
+        if (idTurmaSelecionada == -1) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Por favor, clique em uma turma na tabela abaixo para excluir!");
+        return;
+        }
+
+        int resposta = javax.swing.JOptionPane.showConfirmDialog(this, 
+                "Tem certeza que deseja excluir esta turma?\n(Aviso: Se houver alunos vinculados a turma, não será possivel a exclusão)", 
+                "Confirmação", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
+
+        if (resposta == javax.swing.JOptionPane.YES_OPTION) {
+            try {
+                
+                java.sql.Connection conn = conexao.Conexao.conectar();
+
+                String sql = "DELETE FROM turmas WHERE id = ?";
+                java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, idTurmaSelecionada);
+
+                stmt.executeUpdate();
+                javax.swing.JOptionPane.showMessageDialog(this, "Turma excluída com sucesso!");
+
+                txtNomeTurma1.setText("");
+                txtCodigoTurma.setText("");
+                cbPeriodo.setSelectedIndex(0);
+                idTurmaSelecionada = -1;
+
+                listarTurmasNaTabela();
+
+                stmt.close(); conn.close();
+            } catch (java.sql.SQLException ex) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Erro ao excluir turma: " + ex.getMessage());
+            }
+        }
+    }//GEN-LAST:event_btnExcluirTurmaActionPerformed
+
+    private void btnEditarTurmaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarTurmaActionPerformed
+        if (idTurmaSelecionada == -1) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, clique em uma turma na tabela abaixo antes de editar!");
+            return;
+            }
+
+        String nome = txtNomeTurma1.getText().trim();
+        String codigo = txtCodigoTurma.getText().trim();
+        String periodo = cbPeriodo.getSelectedItem().toString();
+
+        if (nome.isEmpty() || codigo.isEmpty() || periodo.equals("-")) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Preencha todos os campos para editar!");
+            return;
+            }
+
+        try {
+           
+            java.sql.Connection conn = conexao.Conexao.conectar();
+
+            String sql = "UPDATE turmas SET codigo_turma = ?, nome = ?, periodo = ? WHERE id = ?";
+            java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
+
+            stmt.setString(1, codigo);
+            stmt.setString(2, nome);
+            stmt.setString(3, periodo);
+            stmt.setInt(4, idTurmaSelecionada);
+
+            stmt.executeUpdate();
+            javax.swing.JOptionPane.showMessageDialog(this, "Turma atualizada com sucesso!");
+
+            txtNomeTurma1.setText("");
+            txtCodigoTurma.setText("");
+            cbPeriodo.setSelectedIndex(0);
+            idTurmaSelecionada = -1; 
+
+            listarTurmasNaTabela();
+
+            stmt.close(); 
+            conn.close();
+            } catch (java.sql.SQLException ex) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Erro ao editar turma: " + ex.getMessage());
+            }
+        
+    }//GEN-LAST:event_btnEditarTurmaActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -157,4 +311,32 @@ public class PainelTurmas extends javax.swing.JPanel {
     private javax.swing.JTextField txtCodigoTurma;
     private javax.swing.JTextField txtNomeTurma1;
     // End of variables declaration//GEN-END:variables
+
+    private void listarTurmasNaTabela() {
+    javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) jTable1.getModel();
+    modelo.setNumRows(0); // 
+
+    try {
+       
+        java.sql.Connection conn = Conexao.conectar();         
+        String sql = "SELECT id, codigo_turma, nome, periodo FROM turmas";
+        java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
+        java.sql.ResultSet rs = stmt.executeQuery();
+
+        while (rs.next()) {
+            modelo.addRow(new Object[]{
+                rs.getInt("id"),
+                rs.getString("codigo_turma"),
+                rs.getString("nome"),
+                rs.getString("periodo")
+            });
+        }
+
+        rs.close(); stmt.close(); conn.close();
+    } catch (java.sql.SQLException e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Erro ao listar turmas: " + e.getMessage());
+    }
+    }
+
+
 }

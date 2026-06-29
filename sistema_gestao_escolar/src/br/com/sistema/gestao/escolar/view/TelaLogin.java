@@ -233,7 +233,7 @@ if (novaSenha == null || novaSenha.trim().isEmpty()) return;
 
 try {
     java.sql.Connection conn = Conexao.conectar(); 
-    String sql = "INSERT INTO usuarios (usuario, senha) VALUES (?, ?)";
+    String sql = "INSERT INTO usuarios (login, senha) VALUES (?, ?)";
     java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
     stmt.setString(1, novoUsuario);
     stmt.setString(2, novaSenha);
@@ -253,7 +253,7 @@ String senha = new String(txtSenha.getPassword());
 
 try {
     java.sql.Connection conn = conexao.Conexao.conectar();
-    String sql = "SELECT * FROM usuarios WHERE usuario = ? AND senha = ?";
+    String sql = "SELECT * FROM usuarios WHERE login = ? AND senha = ?";
     java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
     stmt.setString(1, usuario);
     stmt.setString(2, senha);

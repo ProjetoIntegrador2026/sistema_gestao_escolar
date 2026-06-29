@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
+
 package br.com.sistema.gestao.escolar.view;
 
 /**
@@ -9,12 +6,15 @@ package br.com.sistema.gestao.escolar.view;
  * @author LENOVO
  */
 public class PainelAlunos extends javax.swing.JPanel {
+    
 
     /**
      * Creates new form PainelAlunos
      */
     public PainelAlunos() {
         initComponents();
+        carregarTurmasNoComboBox();
+        listarAlunosNaTabela();
     }
 
     /**
@@ -30,7 +30,7 @@ public class PainelAlunos extends javax.swing.JPanel {
         jLabel2 = new javax.swing.JLabel();
         txtMatricula = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        txtNomeAluno1 = new javax.swing.JTextField();
+        txtNomeAluno = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         cbTurma = new javax.swing.JComboBox<>();
         btnEditar = new javax.swing.JButton();
@@ -59,8 +59,8 @@ public class PainelAlunos extends javax.swing.JPanel {
         jLabel3.setText("Matrícula:");
         add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(123, 156, -1, -1));
 
-        txtNomeAluno1.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
-        add(txtNomeAluno1, new org.netbeans.lib.awtextra.AbsoluteConstraints(282, 110, 422, -1));
+        txtNomeAluno.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        add(txtNomeAluno, new org.netbeans.lib.awtextra.AbsoluteConstraints(282, 110, 422, -1));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         jLabel4.setText("Turma:");
@@ -73,10 +73,15 @@ public class PainelAlunos extends javax.swing.JPanel {
                 cbTurmaActionPerformed(evt);
             }
         });
-        add(cbTurma, new org.netbeans.lib.awtextra.AbsoluteConstraints(282, 204, 113, -1));
+        add(cbTurma, new org.netbeans.lib.awtextra.AbsoluteConstraints(282, 204, 200, -1));
 
         btnEditar.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnEditar.setText("Editar");
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarActionPerformed(evt);
+            }
+        });
         add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(282, 267, -1, -1));
 
         btnSalvar.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -90,6 +95,11 @@ public class PainelAlunos extends javax.swing.JPanel {
 
         btnExcluir.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnExcluir.setText("Excluir");
+        btnExcluir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExcluirActionPerformed(evt);
+            }
+        });
         add(btnExcluir, new org.netbeans.lib.awtextra.AbsoluteConstraints(397, 267, -1, -1));
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
@@ -103,6 +113,13 @@ public class PainelAlunos extends javax.swing.JPanel {
                 "ID", "Matrícula", "Nome do Aluno", "Turma"
             }
         ));
+        jTable1.setShowHorizontalLines(true);
+        jTable1.setShowVerticalLines(true);
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
         if (jTable1.getColumnModel().getColumnCount() > 0) {
             jTable1.getColumnModel().getColumn(0).setPreferredWidth(50);
@@ -122,13 +139,193 @@ public class PainelAlunos extends javax.swing.JPanel {
         add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 90, 790, 220));
     }// </editor-fold>//GEN-END:initComponents
 
+    private int idAlunoSelecionado = -1;
+    
+    
     private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
-        // TODO add your handling code here:
+                                         
+    String itemSelecionado = cbTurma.getSelectedItem().toString();
+    String idTexto = itemSelecionado.split(" - ")[0];
+    int idTurma = Integer.parseInt(idTexto); 
+    String nome = txtNomeAluno.getText().trim();
+    String matricula = txtMatricula.getText().trim();
+
+    if (nome.isEmpty() || matricula.isEmpty() || cbTurma.getSelectedItem() == null) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos obrigatórios!");
+        return;
+    }
+
+    try {
+        java.sql.Connection conn = conexao.Conexao.conectar();
+        String sqlVerifica = "SELECT matricula FROM alunos WHERE matricula = ?";
+        java.sql.PreparedStatement stmtVerifica = conn.prepareStatement(sqlVerifica);
+        stmtVerifica.setString(1, matricula);
+        java.sql.ResultSet rs = stmtVerifica.executeQuery();
+        
+        if (rs.next()) {
+                    javax.swing.JOptionPane.showMessageDialog(this, "Atenção: A matrícula '" + matricula + "' já esta vinculada a outro aluno!");
+                    rs.close();
+                    stmtVerifica.close();
+                    conn.close();
+                    return;
+                }
+
+                rs.close();
+                stmtVerifica.close();
+        
+        
+        String sql = "INSERT INTO alunos (nome, matricula, id_turma) VALUES (?, ?, ?)";
+        java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
+        
+        stmt.setString(1, nome);
+        stmt.setString(2, matricula);
+       
+        stmt.setInt(3, idTurma);
+
+        stmt.executeUpdate();
+        stmt.close();
+        conn.close();
+
+        javax.swing.JOptionPane.showMessageDialog(this, "Aluno cadastrado com sucesso!");
+
+      
+        txtNomeAluno.setText("");
+        txtMatricula.setText("");
+        if (cbTurma.getItemCount() > 0) {
+            cbTurma.setSelectedIndex(-1);
+        }
+       
+        listarAlunosNaTabela();
+        
+    } catch (java.sql.SQLException ex) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Erro ao salvar aluno: " + ex.getMessage());
+    }
+
     }//GEN-LAST:event_btnSalvarActionPerformed
 
     private void cbTurmaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbTurmaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cbTurmaActionPerformed
+
+    private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
+    if (idAlunoSelecionado == -1) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Por favor, clique em um aluno na tabela abaixo para excluir!");
+        return;
+    }
+
+    int resposta = javax.swing.JOptionPane.showConfirmDialog(this, 
+            "Tem certeza que deseja apagar este aluno do sistema?", 
+            "Confirmação de Exclusão", 
+            javax.swing.JOptionPane.YES_NO_OPTION, 
+            javax.swing.JOptionPane.WARNING_MESSAGE);
+
+    if (resposta == javax.swing.JOptionPane.YES_OPTION) {
+        try {
+            java.sql.Connection conn = conexao.Conexao.conectar();
+            
+            String sql = "DELETE FROM alunos WHERE id = ?";
+            java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
+            
+            stmt.setInt(1, idAlunoSelecionado);
+
+           
+            stmt.executeUpdate();
+            
+            javax.swing.JOptionPane.showMessageDialog(this, "Aluno excluído com sucesso!");
+            
+            txtNomeAluno.setText("");
+            txtMatricula.setText("");
+            cbTurma.setSelectedIndex(-1);
+            
+            idAlunoSelecionado = -1;
+            
+            listarAlunosNaTabela();
+
+            stmt.close();
+            conn.close();
+            
+        } catch (java.sql.SQLException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao excluir aluno: " + ex.getMessage());
+        }
+    }
+
+        
+    }//GEN-LAST:event_btnExcluirActionPerformed
+
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+                                             
+        if (idAlunoSelecionado == -1) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Por favor, clique em um aluno na tabela abaixo antes de editar!");
+        return;
+        }
+
+        String nome = txtNomeAluno.getText().trim();
+        String matricula = txtMatricula.getText().trim();
+
+        if (nome.isEmpty() || matricula.isEmpty() || cbTurma.getSelectedItem() == null) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Preencha todos os campos e selecione a turma para editar!");
+            return;
+        }
+
+        String itemSelecionado = cbTurma.getSelectedItem().toString();
+        String idTexto = itemSelecionado.split(" - ")[0];
+        int idTurma = Integer.parseInt(idTexto);
+
+        try {
+            java.sql.Connection conn = conexao.Conexao.conectar();
+
+            String sql = "UPDATE alunos SET nome = ?, matricula = ?, id_turma = ? WHERE id = ?";
+            java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
+
+            stmt.setString(1, nome);      
+            stmt.setString(2, matricula);
+            stmt.setInt(3, idTurma);      
+            stmt.setInt(4, idAlunoSelecionado);
+
+            stmt.executeUpdate();
+            javax.swing.JOptionPane.showMessageDialog(this, "Dados do aluno atualizados com sucesso!");
+
+            txtNomeAluno.setText("");
+            txtMatricula.setText("");
+            cbTurma.setSelectedIndex(-1);
+
+            idAlunoSelecionado = -1; 
+
+            listarAlunosNaTabela();
+
+            stmt.close();
+            conn.close();
+
+        } catch (java.sql.SQLException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao editar aluno: " + ex.getMessage());
+        }
+
+
+    }//GEN-LAST:event_btnEditarActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+                                        
+        int linhaSelecionada = jTable1.getSelectedRow();
+
+        if (linhaSelecionada != -1) {
+            idAlunoSelecionado = Integer.parseInt(jTable1.getValueAt(linhaSelecionada, 0).toString());
+
+            String matricula = jTable1.getValueAt(linhaSelecionada, 1).toString();
+            String nome = jTable1.getValueAt(linhaSelecionada, 2).toString();
+            String nomeTurma = jTable1.getValueAt(linhaSelecionada, 3).toString();
+
+            txtMatricula.setText(matricula);
+            txtNomeAluno.setText(nome);
+
+            for (int i = 0; i < cbTurma.getItemCount(); i++) {
+                if (cbTurma.getItemAt(i).contains(nomeTurma)) {
+                    cbTurma.setSelectedIndex(i);
+                    break;
+                }
+            }
+        }
+
+    }//GEN-LAST:event_jTable1MouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -145,6 +342,66 @@ public class PainelAlunos extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField txtMatricula;
-    private javax.swing.JTextField txtNomeAluno1;
+    private javax.swing.JTextField txtNomeAluno;
     // End of variables declaration//GEN-END:variables
-}
+
+
+ 
+ 
+    private void carregarTurmasNoComboBox() {
+
+
+        String sql = "SELECT id, nome FROM turmas"; 
+
+
+        cbTurma.removeAllItems();
+
+
+        try (
+             java.sql.Connection conn = conexao.Conexao.conectar();
+             java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
+             java.sql.ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nomeTurma = rs.getString("nome");
+
+                cbTurma.addItem(id + " - " + nomeTurma);
+            }
+           cbTurma.setSelectedIndex(-1);
+
+        } catch (java.sql.SQLException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao carregar turmas: " + e.getMessage());
+        }
+    }
+    private void listarAlunosNaTabela() {
+        javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) jTable1.getModel();
+        modelo.setNumRows(0);
+
+        String sql = "SELECT a.id, a.matricula, a.nome AS nome_aluno, t.nome AS nome_turma " +
+                     "FROM alunos a " +
+                     "INNER JOIN turmas t ON a.id_turma = t.id ORDER BY a.id";
+
+
+        try (
+             java.sql.Connection conn = conexao.Conexao.conectar();
+             java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
+             java.sql.ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                modelo.addRow(new Object[]{
+                    rs.getInt("id"),
+                    rs.getString("matricula"),
+                    rs.getString("nome_aluno"),
+                    rs.getString("nome_turma")
+                });
+            }
+
+        } catch (java.sql.SQLException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao listar alunos na tabela: " + e.getMessage());
+        }
+    }
+
+
+
+    }

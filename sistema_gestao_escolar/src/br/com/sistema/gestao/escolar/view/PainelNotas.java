@@ -15,6 +15,7 @@ public class PainelNotas extends javax.swing.JPanel {
      */
     public PainelNotas() {
         initComponents();
+        carregarTurmasNoComboBox();
     }
 
     /**
@@ -38,7 +39,7 @@ public class PainelNotas extends javax.swing.JPanel {
         jLabel16 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
+        txtNota4 = new javax.swing.JTextField();
         txtNota1 = new javax.swing.JTextField();
         txtNota2 = new javax.swing.JTextField();
         txtNota3 = new javax.swing.JTextField();
@@ -100,7 +101,7 @@ public class PainelNotas extends javax.swing.JPanel {
         jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         jLabel18.setText("Nota - 03 : ..........................................................................................");
         add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 230, 450, -1));
-        add(jTextField4, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 270, -1, -1));
+        add(txtNota4, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 270, -1, -1));
 
         txtNota1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -108,6 +109,12 @@ public class PainelNotas extends javax.swing.JPanel {
             }
         });
         add(txtNota1, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 150, -1, -1));
+
+        txtNota2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtNota2ActionPerformed(evt);
+            }
+        });
         add(txtNota2, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 190, -1, -1));
         add(txtNota3, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 230, -1, -1));
 
@@ -115,6 +122,11 @@ public class PainelNotas extends javax.swing.JPanel {
 
         btnLancar.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnLancar.setText("Gravar Notas");
+        btnLancar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLancarActionPerformed(evt);
+            }
+        });
 
         jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         jLabel15.setText("Turma:");
@@ -195,16 +207,130 @@ public class PainelNotas extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void cbTurmaNotas1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbTurmaNotas1ActionPerformed
-        // TODO add your handling code here:
+    
+        if (cbTurmaNotas1.getSelectedItem() == null) {
+        cbAlunoNotas.removeAllItems();
+        return;
+    }
+
+    String itemSelecionado = cbTurmaNotas1.getSelectedItem().toString();
+    String idTexto = itemSelecionado.split(" - ")[0];
+    int idTurma = Integer.parseInt(idTexto);
+
+    try { 
+        java.sql.Connection conn = conexao.Conexao.conectar();
+        
+        String sql = "SELECT id, nome FROM alunos WHERE id_turma = ?";
+        java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setInt(1, idTurma); 
+        
+        java.sql.ResultSet rs = stmt.executeQuery();
+        
+        cbAlunoNotas.removeAllItems();
+        
+        while (rs.next()) {
+            cbAlunoNotas.addItem(rs.getInt("id") + " - " + rs.getString("nome"));
+        }
+        
+        rs.close();
+        stmt.close();
+        conn.close();
+        
+    } catch (java.sql.SQLException ex) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Erro ao filtrar alunos: " + ex.getMessage());
+    }
     }//GEN-LAST:event_cbTurmaNotas1ActionPerformed
 
     private void cbAlunoNotasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbAlunoNotasActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_cbAlunoNotasActionPerformed
 
     private void txtNota1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNota1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtNota1ActionPerformed
+
+    private void txtNota2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNota2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtNota2ActionPerformed
+
+    private void btnLancarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLancarActionPerformed
+                                              
+    if (cbAlunoNotas.getSelectedItem() == null) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Por favor, selecione um aluno antes de gravar as notas!");
+        return;
+    }
+
+    String n1Texto = txtNota1.getText().trim();
+    String n2Texto = txtNota2.getText().trim();
+    String n3Texto = txtNota3.getText().trim();
+    String n4Texto = txtNota4.getText().trim(); 
+
+    if (n1Texto.isEmpty() || n2Texto.isEmpty() || n3Texto.isEmpty() || n4Texto.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Por favor, insira as quatro notas bimestrais!");
+        return; 
+    }
+
+    try {
+        double n1 = Double.parseDouble(n1Texto.replace(",", "."));
+        double n2 = Double.parseDouble(n2Texto.replace(",", "."));
+        double n3 = Double.parseDouble(n3Texto.replace(",", "."));
+        double n4 = Double.parseDouble(n4Texto.replace(",", "."));
+
+        if (n1 < 0 || n1 > 10 || n2 < 0 || n2 > 10 || n3 < 0 || n3 > 10 || n4 < 0 || n4 > 10) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Atenção: As notas devem ser entre 0 e 10!");
+            return;
+        }
+
+        double media = (n1 + n2 + n3 + n4) / 4.0;
+        
+        String situacao = "";
+        if (media >= 7.0) {
+            situacao = "Aprovado";
+        } else if (media >= 5.0) {
+            situacao = "Recuperação";
+        } else {
+            situacao = "Reprovado";
+        }
+
+        String alunoSelecionado = cbAlunoNotas.getSelectedItem().toString();
+        int idAluno = Integer.parseInt(alunoSelecionado.split(" - ")[0]);
+
+        
+        
+        java.sql.Connection conn = conexao.Conexao.conectar();
+
+        String sql = "INSERT INTO notas (id_aluno, nota1, nota2, nota3, nota4, media, situacao) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
+
+        stmt.setInt(1, idAluno);
+        stmt.setDouble(2, n1);
+        stmt.setDouble(3, n2);
+        stmt.setDouble(4, n3);
+        stmt.setDouble(5, n4);
+        stmt.setDouble(6, media);
+        stmt.setString(7, situacao);
+
+        stmt.executeUpdate();
+
+        String mediaFormatada = String.format("%.2f", media); 
+        javax.swing.JOptionPane.showMessageDialog(this, "Notas salvas com sucesso!\n\nMédia: " + mediaFormatada + "\nSituação: " + situacao);
+
+        txtNota1.setText("");
+        txtNota2.setText("");
+        txtNota3.setText("");
+        txtNota4.setText("");
+        cbAlunoNotas.setSelectedIndex(-1);
+
+        stmt.close();
+        conn.close();
+        
+    } catch (NumberFormatException e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Por favor, digite apenas números válidos nas caixas de notas!");
+    } catch (java.sql.SQLException ex) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Erro ao salvar no banco de dados: " + ex.getMessage());
+    }
+
+    }//GEN-LAST:event_btnLancarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -228,9 +354,40 @@ public class PainelNotas extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField txtNota1;
     private javax.swing.JTextField txtNota2;
     private javax.swing.JTextField txtNota3;
+    private javax.swing.JTextField txtNota4;
     // End of variables declaration//GEN-END:variables
+    
+    
+    private void carregarTurmasNoComboBox() {
+    try {
+        String url = "jdbc:mysql://localhost:3306/sistema_gestao_escolar";
+        String usuario = "root";
+        String senha = "123456"; 
+        java.sql.Connection conn = java.sql.DriverManager.getConnection(url, usuario, senha);
+        
+        String sql = "SELECT id, nome FROM turmas";
+        java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
+        java.sql.ResultSet rs = stmt.executeQuery();
+        
+        cbTurmaNotas1.removeAllItems();
+        
+        while (rs.next()) {
+            cbTurmaNotas1.addItem(rs.getInt("id") + " - " + rs.getString("nome"));
+        }
+         cbTurmaNotas1.setSelectedIndex(-1);
+        rs.close();
+        stmt.close();
+        conn.close();
+        
+    } catch (java.sql.SQLException ex) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Erro ao carregar turmas: " + ex.getMessage());
+    }
+}
+
+
+
+
 }
