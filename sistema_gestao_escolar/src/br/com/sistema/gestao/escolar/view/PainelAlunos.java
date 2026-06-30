@@ -45,7 +45,7 @@ public class PainelAlunos extends javax.swing.JPanel {
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 22)); // NOI18N
-        jLabel1.setText("Gest„o de Alunos");
+        jLabel1.setText("Gest√£o de Alunos");
         add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 20, -1, -1));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
@@ -56,7 +56,7 @@ public class PainelAlunos extends javax.swing.JPanel {
         add(txtMatricula, new org.netbeans.lib.awtextra.AbsoluteConstraints(282, 158, 422, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
-        jLabel3.setText("MatrÌcula:");
+        jLabel3.setText("Matr√≠cula:");
         add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(123, 156, -1, -1));
 
         txtNomeAluno.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
@@ -110,7 +110,7 @@ public class PainelAlunos extends javax.swing.JPanel {
                 {null, null, null, null}
             },
             new String [] {
-                "ID", "MatrÌcula", "Nome do Aluno", "Turma"
+                "ID", "Matr√≠cula", "Nome do Aluno", "Turma"
             }
         ));
         jTable1.setShowHorizontalLines(true);
@@ -131,7 +131,7 @@ public class PainelAlunos extends javax.swing.JPanel {
         add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(75, 335, 798, 191));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
-        jLabel5.setText("Utilize este painel para cadastrar novos estudantes, vincular turmas obrigatÛrias e gerenciar os registros da instituiÁ„o");
+        jLabel5.setText("Utilize este painel para cadastrar novos estudantes, vincular turmas obrigat√≥rias e gerenciar os registros da institui√ß√£o");
         add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 50, -1, -1));
 
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
@@ -151,7 +151,7 @@ public class PainelAlunos extends javax.swing.JPanel {
     String matricula = txtMatricula.getText().trim();
 
     if (nome.isEmpty() || matricula.isEmpty() || cbTurma.getSelectedItem() == null) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos obrigatÛrios!");
+        javax.swing.JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos obrigat√≥rios!");
         return;
     }
 
@@ -163,7 +163,7 @@ public class PainelAlunos extends javax.swing.JPanel {
         java.sql.ResultSet rs = stmtVerifica.executeQuery();
         
         if (rs.next()) {
-                    javax.swing.JOptionPane.showMessageDialog(this, "AtenÁ„o: A matrÌcula '" + matricula + "' j· esta vinculada a outro aluno!");
+                    javax.swing.JOptionPane.showMessageDialog(this, "Aten√ß√£o: A matr√≠cula '" + matricula + "' j√° esta vinculada a outro aluno!");
                     rs.close();
                     stmtVerifica.close();
                     conn.close();
@@ -215,7 +215,7 @@ public class PainelAlunos extends javax.swing.JPanel {
 
     int resposta = javax.swing.JOptionPane.showConfirmDialog(this, 
             "Tem certeza que deseja apagar este aluno do sistema?", 
-            "ConfirmaÁ„o de Exclus„o", 
+            "Confirma√ß√£o de Exclus√£o", 
             javax.swing.JOptionPane.YES_NO_OPTION, 
             javax.swing.JOptionPane.WARNING_MESSAGE);
 
@@ -231,7 +231,7 @@ public class PainelAlunos extends javax.swing.JPanel {
            
             stmt.executeUpdate();
             
-            javax.swing.JOptionPane.showMessageDialog(this, "Aluno excluÌdo com sucesso!");
+            javax.swing.JOptionPane.showMessageDialog(this, "Aluno exclu√≠do com sucesso!");
             
             txtNomeAluno.setText("");
             txtMatricula.setText("");
@@ -326,6 +326,13 @@ public class PainelAlunos extends javax.swing.JPanel {
         }
 
     }//GEN-LAST:event_jTable1MouseClicked
+
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnExcluirActionPerformed
+
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnEditarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

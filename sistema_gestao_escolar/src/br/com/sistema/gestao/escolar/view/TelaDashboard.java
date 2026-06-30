@@ -14,25 +14,28 @@ public class TelaDashboard extends javax.swing.JFrame {
      * Creates new form TelaDashboard
      */
     public TelaDashboard() {
-        initComponents();
-        this.setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
+    initComponents();
+    this.setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
 
-        
-br.com.sistema.gestao.escolar.view.PainelAlunos telaAlunos = new br.com.sistema.gestao.escolar.view.PainelAlunos();
-br.com.sistema.gestao.escolar.view.PainelTurmas telaTurmas = new br.com.sistema.gestao.escolar.view.PainelTurmas();
-br.com.sistema.gestao.escolar.view.PainelNotas telaNotas = new br.com.sistema.gestao.escolar.view.PainelNotas();
-br.com.sistema.gestao.escolar.view.PainelRelatorios telaRelatorios = new br.com.sistema.gestao.escolar.view.PainelRelatorios();
+    // FIX: Cria o CardLayout e injeta explicitamente no seu painel de conteúdo
+    java.awt.CardLayout cl = new java.awt.CardLayout();
+    pnlConteudo.setLayout(cl);
 
-// 2. Painéis dentro do pnlConteudo 
-pnlConteudo.add(telaAlunos, "alunos");
-pnlConteudo.add(telaTurmas, "turmas");
-pnlConteudo.add(telaNotas, "notas");
-pnlConteudo.add(telaRelatorios, "relatorios");
+    // 1. Instancia as páginas usando o caminho dos seus pacotes
+    br.com.sistema.gestao.escolar.view.PainelAlunos telaAlunos = new br.com.sistema.gestao.escolar.view.PainelAlunos();
+    br.com.sistema.gestao.escolar.view.PainelTurmas telaTurmas = new br.com.sistema.gestao.escolar.view.PainelTurmas();
+    br.com.sistema.gestao.escolar.view.PainelNotas telaNotas = new br.com.sistema.gestao.escolar.view.PainelNotas();
+    br.com.sistema.gestao.escolar.view.PainelRelatorios telaRelatorios = new br.com.sistema.gestao.escolar.view.PainelRelatorios();
 
-// 3. Tela abre por padrão quando o Dashboard iniciar
-java.awt.CardLayout cl = (java.awt.CardLayout) pnlConteudo.getLayout();
-cl.show(pnlConteudo, "alunos");
-    }
+    // 2. Adiciona os painéis dentro do pnlConteudo associando as tags corretas
+    pnlConteudo.add(telaAlunos, "alunos");
+    pnlConteudo.add(telaTurmas, "turmas");
+    pnlConteudo.add(telaNotas, "notas");
+    pnlConteudo.add(telaRelatorios, "relatorios");
+
+    // 3. Define qual tela abre por padrão quando o Dashboard iniciar
+    cl.show(pnlConteudo, "alunos");
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
