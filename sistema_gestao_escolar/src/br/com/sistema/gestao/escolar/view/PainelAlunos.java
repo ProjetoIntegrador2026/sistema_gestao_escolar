@@ -77,6 +77,11 @@ public class PainelAlunos extends javax.swing.JPanel {
 
         btnEditar.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnEditar.setText("Editar");
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarActionPerformed(evt);
+            }
+        });
         add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(282, 267, -1, -1));
 
         btnSalvar.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -90,6 +95,11 @@ public class PainelAlunos extends javax.swing.JPanel {
 
         btnExcluir.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnExcluir.setText("Excluir");
+        btnExcluir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExcluirActionPerformed(evt);
+            }
+        });
         add(btnExcluir, new org.netbeans.lib.awtextra.AbsoluteConstraints(397, 267, -1, -1));
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
@@ -129,6 +139,14 @@ public class PainelAlunos extends javax.swing.JPanel {
     private void cbTurmaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbTurmaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cbTurmaActionPerformed
+
+    private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnExcluirActionPerformed
+
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnEditarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

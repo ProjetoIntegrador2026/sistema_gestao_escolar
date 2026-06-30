@@ -248,7 +248,7 @@ try {
     }//GEN-LAST:event_btnIrParaCadastroActionPerformed
 
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
-String usuario = txtUsuario1.getText(); 
+    String usuario = txtUsuario1.getText(); 
 String senha = new String(txtSenha.getPassword());
 
 try {
