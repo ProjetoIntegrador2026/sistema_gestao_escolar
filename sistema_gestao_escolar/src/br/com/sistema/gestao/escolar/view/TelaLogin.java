@@ -4,8 +4,7 @@
  */
 package br.com.sistema.gestao.escolar.view;
 
-import conexao.Conexao;
-
+import br.com.sistema.gestao.escolar.factory.Conexao;
 /**
  *
  * @author LENOVO
@@ -231,19 +230,57 @@ String novaSenha = javax.swing.JOptionPane.showInputDialog(this, "Digite a senha
 if (novaSenha == null || novaSenha.trim().isEmpty()) return;
 
 
-try {
-    java.sql.Connection conn = Conexao.conectar(); 
-    String sql = "INSERT INTO usuarios (usuario, senha) VALUES (?, ?)";
-    java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
-    stmt.setString(1, novoUsuario);
-    stmt.setString(2, novaSenha);
+String sql = "INSERT INTO usuarios (usuario, senha) VALUES (?, ?);";
+
+try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao();
+     java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
     
-    stmt.executeUpdate();
-    stmt.close();
+    // Injeta as variáveis de texto com segurança nas interrogações (?) do SQL
+    stmt.setString(1, novoUsuario.trim());
+    stmt.setString(2, novaSenha.trim());
     
-    javax.swing.JOptionPane.showMessageDialog(this, "Usuário cadastrado com sucesso! Agora já pode logar.");
+    // Executa a gravação no servidor do Render
+    int linhasAfetadas = stmt.executeUpdate();
+    
+    if (linhasAfetadas > 0) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Usuário " + novoUsuario + " cadastrado com sucesso na nuvem!");
+    } else {
+        javax.swing.JOptionPane.showMessageDialog(this, "Não foi possível cadastrar o usuário.");
+    }
+
 } catch (java.sql.SQLException ex) {
-    javax.swing.JOptionPane.showMessageDialog(this, "Erro ao salvar no banco: " + ex.getMessage());
+    // Se o usuário já existir ou der erro de rede, avisa na tela
+    if (ex.getMessage().contains("duplicate key")) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Erro: O usuário '" + novoUsuario + "' já existe!");
+    } else {
+        javax.swing.JOptionPane.showMessageDialog(this, "Erro ao gravar no banco: " + ex.getMessage());
+    }
+}
+
+
+
+try {
+    java.sql.Connection conn = Conexao.getConexao();
+    
+   
+    String sqlTabela = "CREATE TABLE IF NOT EXISTS usuarios ("
+                     + "id SERIAL PRIMARY KEY, "
+                     + "usuario VARCHAR(50) NOT NULL UNIQUE, "
+                     + "senha VARCHAR(50) NOT NULL);";
+    
+    java.sql.Statement stmt = conn.createStatement();
+    stmt.execute(sqlTabela);
+    
+  
+    String sqlUsuarioPadrao = "INSERT INTO usuarios (usuario, senha) "
+                            + "VALUES ('rubens', '1234') "
+                            + "ON CONFLICT (usuario) DO NOTHING;";
+    stmt.execute(sqlUsuarioPadrao);
+    
+   
+    
+} catch (java.sql.SQLException ex) {
+    javax.swing.JOptionPane.showMessageDialog(null, "Erro na base: " + ex.getMessage());
 }        // TODO add your handling code here:
     }//GEN-LAST:event_btnIrParaCadastroActionPerformed
 
@@ -252,7 +289,7 @@ try {
 String senha = new String(txtSenha.getPassword());
 
 try {
-    java.sql.Connection conn = conexao.Conexao.conectar();
+    java.sql.Connection conn = Conexao.getConexao();
     String sql = "SELECT * FROM usuarios WHERE usuario = ? AND senha = ?";
     java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
     stmt.setString(1, usuario);
