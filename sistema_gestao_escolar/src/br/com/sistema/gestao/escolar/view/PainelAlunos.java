@@ -143,9 +143,10 @@ public class PainelAlunos extends javax.swing.JPanel {
     }
     String turmaSelecionada = cbTurma.getSelectedItem().toString();
 
-    // SQL inteligente que busca o ID da turma pelo nome selecionado no combo    String sql = "INSERT INTO aluno (matricula, nome, id_turma) VALUES (?, ?, (SELECT id FROM turma WHERE nome_turma = ? LIMIT 1))";
+    // SQL corrigido com a subquery interna para achar o ID da turma pelo nome
+    String sql = "INSERT INTO aluno (matricula, nome, id_turma) VALUES (?, ?, (SELECT id FROM turma WHERE nome_turma = ? LIMIT 1))";
 
-        try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao();
+    try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao();
          java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
         
         stmt.setString(1, matricula);
@@ -155,19 +156,25 @@ public class PainelAlunos extends javax.swing.JPanel {
         
         javax.swing.JOptionPane.showMessageDialog(this, "Aluno cadastrado com sucesso!");
         
-        // Atualiza a tabela dinamicamente        javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tabelaAlunos.getModel();
+        // Atualiza a tabela corrigindo o corte da linha 164
+        javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tabelaAlunos.getModel();
         modelo.setNumRows(0);
         String sqlTab = "SELECT a.id, a.matricula, a.nome, t.nome_turma FROM aluno a LEFT JOIN turma t ON a.id_turma = t.id ORDER BY a.id DESC";
         try (java.sql.PreparedStatement stmtTab = conn.prepareStatement(sqlTab);
              java.sql.ResultSet rs = stmtTab.executeQuery()) {
             while (rs.next()) {
-                modelo.addRow(new Object[]{rs.getInt("id"), rs.getString("matricula"), rs.getString("nome"), rs.getString("nome_turma") != null ? rs.getString("nome_turma") : "Sem Turma"});
+                modelo.addRow(new Object[]{
+                    rs.getInt("id"), 
+                    rs.getString("matricula"), 
+                    rs.getString("nome"), 
+                    rs.getString("nome_turma") != null ? rs.getString("nome_turma") : "Sem Turma"
+                });
             }
         }
     }
 } catch (java.sql.SQLException ex) {
     javax.swing.JOptionPane.showMessageDialog(this, "Erro no banco da Render: " + ex.getMessage());
-}   
+}
     }//GEN-LAST:event_btnSalvarActionPerformed
 
     private void cbTurmaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbTurmaActionPerformed
@@ -195,19 +202,26 @@ public class PainelAlunos extends javax.swing.JPanel {
         int deletado = stmt.executeUpdate();
         
         if (deletado > 0) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Aluno removido com sucesso.");
-            
-            // Atualiza a tabela dinamicamente            javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tabelaAlunos.getModel();
-            modelo.setNumRows(0);
-            String sqlTab = "SELECT a.id, a.matricula, a.nome, t.nome_turma FROM aluno a LEFT JOIN turma t ON a.id_turma = t.id ORDER BY a.id DESC";
-            try (java.sql.PreparedStatement stmtTab = conn.prepareStatement(sqlTab);
-                 java.sql.ResultSet rs = stmtTab.executeQuery()) {
-                while (rs.next()) {
-                    modelo.addRow(new Object[]{rs.getInt("id"), rs.getString("matricula"), rs.getString("nome"), rs.getString("nome_turma") != null ? rs.getString("nome_turma") : "Sem Turma"});
-                }
-            }
-            txtNomeAluno1.setText("");
-            txtMatricula.setText("");
+    javax.swing.JOptionPane.showMessageDialog(this, "Aluno removido com sucesso.");
+    
+    // Atualiza a tabela limpando o erro da linha 206
+    javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tabelaAlunos.getModel();
+    modelo.setNumRows(0);
+    String sqlTab = "SELECT a.id, a.matricula, a.nome, t.nome_turma FROM aluno a LEFT JOIN turma t ON a.id_turma = t.id ORDER BY a.id DESC";
+    try (java.sql.PreparedStatement stmtTab = conn.prepareStatement(sqlTab);
+         java.sql.ResultSet rs = stmtTab.executeQuery()) {
+        while (rs.next()) {
+            modelo.addRow(new Object[]{
+                rs.getInt("id"), 
+                rs.getString("matricula"), 
+                rs.getString("nome"), 
+                rs.getString("nome_turma") != null ? rs.getString("nome_turma") : "Sem Turma"
+            });
+        }
+    }
+    txtNomeAluno1.setText("");
+    txtMatricula.setText("");
+
         } else {
             javax.swing.JOptionPane.showMessageDialog(this, "Matrícula não encontrada.");
         }
@@ -239,17 +253,24 @@ public class PainelAlunos extends javax.swing.JPanel {
         
         int atualizado = stmt.executeUpdate();
         if (atualizado > 0) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Dados do aluno atualizados!");
-            
-            // Atualiza a tabela dinamicamente            javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tabelaAlunos.getModel();
-            modelo.setNumRows(0);
-            String sqlTab = "SELECT a.id, a.matricula, a.nome, t.nome_turma FROM aluno a LEFT JOIN turma t ON a.id_turma = t.id ORDER BY a.id DESC";
-            try (java.sql.PreparedStatement stmtTab = conn.prepareStatement(sqlTab);
-                 java.sql.ResultSet rs = stmtTab.executeQuery()) {
-                while (rs.next()) {
-                    modelo.addRow(new Object[]{rs.getInt("id"), rs.getString("matricula"), rs.getString("nome"), rs.getString("nome_turma") != null ? rs.getString("nome_turma") : "Sem Turma"});
-                }
-            }
+    javax.swing.JOptionPane.showMessageDialog(this, "Dados do aluno atualizados!");
+    
+    // Atualiza a tabela limpando o erro da linha 250
+    javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tabelaAlunos.getModel();
+    modelo.setNumRows(0);
+    String sqlTab = "SELECT a.id, a.matricula, a.nome, t.nome_turma FROM aluno a LEFT JOIN turma t ON a.id_turma = t.id ORDER BY a.id DESC";
+    try (java.sql.PreparedStatement stmtTab = conn.prepareStatement(sqlTab);
+         java.sql.ResultSet rs = stmtTab.executeQuery()) {
+        while (rs.next()) {
+            modelo.addRow(new Object[]{
+                rs.getInt("id"), 
+                rs.getString("matricula"), 
+                rs.getString("nome"), 
+                rs.getString("nome_turma") != null ? rs.getString("nome_turma") : "Sem Turma"
+            });
+        }
+    }
+
         } else {
             javax.swing.JOptionPane.showMessageDialog(this, "Matrícula não encontrada.");
         }
