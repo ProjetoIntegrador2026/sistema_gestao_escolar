@@ -113,7 +113,60 @@ public class PainelRelatorios extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        // TODO add your handling code here:
+try {
+    String termoBusca = txtBuscaAluno.getText().trim();
+    
+    if (termoBusca.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Por favor, digite o CPF ou Nome do aluno.");
+        return;
+    }
+
+    
+    javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tabelaBoletim.getModel();
+    modelo.setNumRows(0); 
+   
+    String sql = "SELECT a.id AS matricula, a.nome AS aluno, t.nome_turma AS turma, " +
+                 "COALESCE(((n.nota1 + n.nota2 + n.nota3 + n.nota4) / 4), 0.0) AS media, " +
+                 "COALESCE(a.frequencia, 100.0) AS frequencia, " + 
+                 "CASE WHEN ((n.nota1 + n.nota2 + n.nota3 + n.nota4) / 4) >= 7.0 THEN 'Aprovado' ELSE 'Recuperação/Reprovado' END AS situacao " +
+                 "FROM aluno a " +
+                 "LEFT JOIN nota n ON a.id = n.id_aluno " +
+                 "LEFT JOIN turma t ON a.id_turma = t.id " + 
+                 "WHERE a.cpf = ? OR a.nome ILIKE ?";
+
+    try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao();
+         java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+        stmt.setString(1, termoBusca);
+        stmt.setString(2, "%" + termoBusca + "%");
+        
+        try (java.sql.ResultSet rs = stmt.executeQuery()) {
+            boolean achou = false;
+            
+            while (rs.next()) {
+                achou = true;
+                
+                modelo.addRow(new Object[]{
+                    rs.getInt("matricula"),
+                    rs.getString("aluno"),
+                    rs.getString("turma") != null ? rs.getString("turma") : "Sem Turma",
+                    String.format("%.2f", rs.getDouble("media")),
+                    rs.getDouble("frequencia") + "%",
+                    rs.getString("situacao")
+                });
+            }
+            
+            if (!achou) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Nenhum registro encontrado.");
+            }
+        }
+    }
+
+} catch (java.sql.SQLException ex) {
+    javax.swing.JOptionPane.showMessageDialog(this, "Erro no banco da Render: " + ex.getMessage());
+} catch (Exception ex) {
+    javax.swing.JOptionPane.showMessageDialog(this, "Erro no sistema: " + ex.getMessage());
+}    // TODO add your handling code here:
     }//GEN-LAST:event_btnBuscarActionPerformed
 
 

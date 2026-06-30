@@ -15,7 +15,8 @@ public class PainelAlunos extends javax.swing.JPanel {
      */
     public PainelAlunos() {
         initComponents();
-    }
+    btnSalvarActionPerformed(null);
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -37,7 +38,7 @@ public class PainelAlunos extends javax.swing.JPanel {
         btnSalvar = new javax.swing.JButton();
         btnExcluir = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tabelaAlunos = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
 
@@ -102,7 +103,7 @@ public class PainelAlunos extends javax.swing.JPanel {
         });
         add(btnExcluir, new org.netbeans.lib.awtextra.AbsoluteConstraints(397, 267, -1, -1));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tabelaAlunos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -113,12 +114,12 @@ public class PainelAlunos extends javax.swing.JPanel {
                 "ID", "Matrícula", "Nome do Aluno", "Turma"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setPreferredWidth(50);
-            jTable1.getColumnModel().getColumn(1).setPreferredWidth(120);
-            jTable1.getColumnModel().getColumn(2).setPreferredWidth(350);
-            jTable1.getColumnModel().getColumn(3).setPreferredWidth(150);
+        jScrollPane1.setViewportView(tabelaAlunos);
+        if (tabelaAlunos.getColumnModel().getColumnCount() > 0) {
+            tabelaAlunos.getColumnModel().getColumn(0).setPreferredWidth(50);
+            tabelaAlunos.getColumnModel().getColumn(1).setPreferredWidth(120);
+            tabelaAlunos.getColumnModel().getColumn(2).setPreferredWidth(350);
+            tabelaAlunos.getColumnModel().getColumn(3).setPreferredWidth(150);
         }
 
         add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(75, 335, 798, 191));
@@ -161,7 +162,7 @@ public class PainelAlunos extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tabelaAlunos;
     private javax.swing.JTextField txtMatricula;
     private javax.swing.JTextField txtNomeAluno1;
     // End of variables declaration//GEN-END:variables

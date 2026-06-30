@@ -38,7 +38,7 @@ public class PainelNotas extends javax.swing.JPanel {
         jLabel16 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
+        txtNota4 = new javax.swing.JTextField();
         txtNota1 = new javax.swing.JTextField();
         txtNota2 = new javax.swing.JTextField();
         txtNota3 = new javax.swing.JTextField();
@@ -100,7 +100,7 @@ public class PainelNotas extends javax.swing.JPanel {
         jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         jLabel18.setText("Nota - 03 : ..........................................................................................");
         add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 230, 450, -1));
-        add(jTextField4, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 270, -1, -1));
+        add(txtNota4, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 270, -1, -1));
 
         txtNota1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -115,6 +115,11 @@ public class PainelNotas extends javax.swing.JPanel {
 
         btnLancar.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnLancar.setText("Gravar Notas");
+        btnLancar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLancarActionPerformed(evt);
+            }
+        });
 
         jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         jLabel15.setText("Turma:");
@@ -206,6 +211,95 @@ public class PainelNotas extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtNota1ActionPerformed
 
+    private void btnLancarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLancarActionPerformed
+try {
+    // 1. Validação básica: verifica se tem aluno selecionado
+    if (cbAlunoNotas.getSelectedItem() == null) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Selecione um aluno primeiro.");
+        return;
+    }
+    
+    String alunoSelecionado = cbAlunoNotas.getSelectedItem().toString();
+
+    // 2. Converte as notas digitadas de String para double (tratando se usarem vírgula)
+    double n1 = txtNota1.getText().trim().isEmpty() ? 0.0 : Double.parseDouble(txtNota1.getText().replace(",", "."));
+    double n2 = txtNota2.getText().trim().isEmpty() ? 0.0 : Double.parseDouble(txtNota2.getText().replace(",", "."));
+    double n3 = txtNota3.getText().trim().isEmpty() ? 0.0 : Double.parseDouble(txtNota3.getText().replace(",", "."));
+    double n4 = txtNota4.getText().trim().isEmpty() ? 0.0 : Double.parseDouble(txtNota4.getText().replace(",", "."));
+
+    // 3. SQL inteligente: Tenta dar UPDATE, se não afetar nenhuma linha, faz o INSERT
+    String sqlUpdate = "UPDATE nota SET nota1 = ?, nota2 = ?, nota3 = ?, nota4 = ? " +
+                       "WHERE id_aluno = (SELECT id FROM aluno WHERE nome = ? LIMIT 1)";
+    
+    String sqlInsert = "INSERT INTO nota (id_aluno, nota1, nota2, nota3, nota4) " +
+                       "VALUES ((SELECT id FROM aluno WHERE nome = ? LIMIT 1), ?, ?, ?, ?)";
+
+    try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao()) {
+        
+        // Tenta atualizar primeiro
+        try (java.sql.PreparedStatement stmtUp = conn.prepareStatement(sqlUpdate)) {
+            stmtUp.setDouble(1, n1);
+            stmtUp.setDouble(2, n2);
+            stmtUp.setDouble(3, n3);
+            stmtUp.setDouble(4, n4);
+            stmtUp.setString(5, alunoSelecionado);
+            
+            int linhasAfetadas = stmtUp.executeUpdate();
+            
+            // Se não atualizou nada, significa que o aluno não tem registro na tabela nota. Faz o INSERT.
+            if (linhasAfetadas == 0) {
+                try (java.sql.PreparedStatement stmtIn = conn.prepareStatement(sqlInsert)) {
+                    stmtIn.setString(1, alunoSelecionado);
+                    stmtIn.setDouble(2, n1);
+                    stmtIn.setDouble(3, n2);
+                    stmtIn.setDouble(4, n3);
+                    stmtIn.setDouble(5, n4);
+                    stmtIn.executeUpdate();
+                }
+            }
+        }
+        
+        javax.swing.JOptionPane.showMessageDialog(this, "Notas gravadas com sucesso no banco!");
+        
+        // 4. ATUALIZAR A TABELA DA TELA (jTable1)
+        javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) jTable1.getModel();
+        modelo.setNumRows(0); // Limpa
+        
+        String sqlTabela = "SELECT a.id, a.nome, n.nota1, n.nota2, n.nota3, n.nota4, " +
+                           "((n.nota1 + n.nota2 + n.nota3 + n.nota4) / 4) AS media_final, " +
+                           "CASE WHEN ((n.nota1 + n.nota2 + n.nota3 + n.nota4) / 4) >= 7.0 THEN 'Aprovado' ELSE 'Reprovado' END AS situacao " +
+                           "FROM aluno a " +
+                           "INNER JOIN nota n ON a.id = n.id_aluno " +
+                           "WHERE a.nome = ?";
+                           
+        try (java.sql.PreparedStatement stmtTab = conn.prepareStatement(sqlTabela)) {
+            stmtTab.setString(1, alunoSelecionado);
+            try (java.sql.ResultSet rs = stmtTab.executeQuery()) {
+                if (rs.next()) {
+                    modelo.addRow(new Object[]{
+                        rs.getInt("id"),
+                        rs.getString("nome"),
+                        rs.getDouble("nota1"),
+                        rs.getDouble("nota2"),
+                        rs.getDouble("nota3"),
+                        rs.getDouble("nota4"),
+                        String.format("%.2f", rs.getDouble("media_final")),
+                        rs.getString("situacao")
+                    });
+                }
+            }
+        }
+    }
+
+} catch (NumberFormatException e) {
+    javax.swing.JOptionPane.showMessageDialog(this, "Formato de nota inválido. Use apenas números.");
+} catch (java.sql.SQLException ex) {
+    javax.swing.JOptionPane.showMessageDialog(this, "Erro no banco da Render: " + ex.getMessage());
+} catch (Exception ex) {
+    javax.swing.JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage());
+}        // TODO add your handling code here:
+    }//GEN-LAST:event_btnLancarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLancar;
@@ -228,9 +322,9 @@ public class PainelNotas extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField txtNota1;
     private javax.swing.JTextField txtNota2;
     private javax.swing.JTextField txtNota3;
+    private javax.swing.JTextField txtNota4;
     // End of variables declaration//GEN-END:variables
 }

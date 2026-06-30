@@ -15,7 +15,8 @@ public class PainelTurmas extends javax.swing.JPanel {
      */
     public PainelTurmas() {
         initComponents();
-    }
+    btnSalvarTurmaActionPerformed(null); 
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -38,8 +39,9 @@ public class PainelTurmas extends javax.swing.JPanel {
         btnSalvarTurma = new javax.swing.JButton();
         btnExcluirTurma = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tabelaTurmas = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -80,6 +82,11 @@ public class PainelTurmas extends javax.swing.JPanel {
 
         btnEditarTurma.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnEditarTurma.setText("Editar");
+        btnEditarTurma.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarTurmaActionPerformed(evt);
+            }
+        });
         add(btnEditarTurma, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 260, -1, -1));
 
         btnSalvarTurma.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -93,9 +100,14 @@ public class PainelTurmas extends javax.swing.JPanel {
 
         btnExcluirTurma.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnExcluirTurma.setText("Excluir");
+        btnExcluirTurma.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExcluirTurmaActionPerformed(evt);
+            }
+        });
         add(btnExcluirTurma, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 260, -1, -1));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tabelaTurmas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -106,12 +118,12 @@ public class PainelTurmas extends javax.swing.JPanel {
                 "ID", "Código", "Nome da Turma", "Período"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setPreferredWidth(50);
-            jTable1.getColumnModel().getColumn(1).setPreferredWidth(100);
-            jTable1.getColumnModel().getColumn(2).setPreferredWidth(450);
-            jTable1.getColumnModel().getColumn(3).setPreferredWidth(150);
+        jScrollPane1.setViewportView(tabelaTurmas);
+        if (tabelaTurmas.getColumnModel().getColumnCount() > 0) {
+            tabelaTurmas.getColumnModel().getColumn(0).setPreferredWidth(50);
+            tabelaTurmas.getColumnModel().getColumn(1).setPreferredWidth(100);
+            tabelaTurmas.getColumnModel().getColumn(2).setPreferredWidth(450);
+            tabelaTurmas.getColumnModel().getColumn(3).setPreferredWidth(150);
         }
 
         add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 310, 798, 191));
@@ -130,6 +142,7 @@ public class PainelTurmas extends javax.swing.JPanel {
         );
 
         add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 80, 800, 220));
+        add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(920, 370, -1, -1));
     }// </editor-fold>//GEN-END:initComponents
 
     private void cbPeriodoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPeriodoActionPerformed
@@ -137,8 +150,131 @@ public class PainelTurmas extends javax.swing.JPanel {
     }//GEN-LAST:event_cbPeriodoActionPerformed
 
     private void btnSalvarTurmaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarTurmaActionPerformed
-        // TODO add your handling code here:
+try {
+    String nome = txtNomeTurma1.getText().trim();
+    String codigo = txtCodigoTurma.getText().trim();
+    if (cbPeriodo.getSelectedItem() == null || nome.isEmpty() || codigo.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Preencha todos os campos antes de salvar.");
+        return;
+    }
+    String periodo = cbPeriodo.getSelectedItem().toString();
+
+    String sql = "INSERT INTO turma (codigo_turma, nome_turma, turno) VALUES (?, ?, ?)";
+
+    try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao();
+         java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+        stmt.setString(1, codigo);
+        stmt.setString(2, nome);
+        stmt.setString(3, periodo);
+        stmt.executeUpdate();
+        
+        javax.swing.JOptionPane.showMessageDialog(this, "Turma cadastrada com sucesso!");
+        
+        // Atualiza a tabela dinamicamente
+       // Atualiza a tabela direto aqui dentro
+javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tabelaTurmas.getModel();
+modelo.setNumRows(0);
+String sqlTab = "SELECT id, codigo_turma, nome_turma, turno FROM turma ORDER BY id DESC";
+try (java.sql.PreparedStatement stmtTab = conn.prepareStatement(sqlTab);
+     java.sql.ResultSet rs = stmtTab.executeQuery()) {
+    while (rs.next()) {
+        modelo.addRow(new Object[]{rs.getInt("id"), rs.getString("codigo_turma"), rs.getString("nome_turma"), rs.getString("turno")});
+    }
+}
+    }
+} catch (java.sql.SQLException ex) {
+    javax.swing.JOptionPane.showMessageDialog(this, "Erro no banco da Render: " + ex.getMessage());
+}        // TODO add your handling code here:
     }//GEN-LAST:event_btnSalvarTurmaActionPerformed
+
+    private void btnEditarTurmaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarTurmaActionPerformed
+try {
+    String nome = txtNomeTurma1.getText().trim();
+    String codigo = txtCodigoTurma.getText().trim();
+    String periodo = cbPeriodo.getSelectedItem().toString();
+
+    if (codigo.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Informe o Código da Turma que deseja editar.");
+        return;
+    }
+
+    String sql = "UPDATE turma SET nome_turma = ?, turno = ? WHERE codigo_turma = ?";
+
+    try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao();
+         java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+        stmt.setString(1, nome);
+        stmt.setString(2, periodo);
+        stmt.setString(3, codigo);
+        
+        int atualizado = stmt.executeUpdate();
+        if (atualizado > 0) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Turma atualizada com sucesso!");
+            
+            // Atualiza a tabela direto aqui dentro
+            javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tabelaTurmas.getModel();
+            modelo.setNumRows(0);
+            String sqlTab = "SELECT id, codigo_turma, nome_turma, turno FROM turma ORDER BY id DESC";
+            try (java.sql.PreparedStatement stmtTab = conn.prepareStatement(sqlTab);
+                 java.sql.ResultSet rs = stmtTab.executeQuery()) {
+                while (rs.next()) {
+                    modelo.addRow(new Object[]{rs.getInt("id"), rs.getString("codigo_turma"), rs.getString("nome_turma"), rs.getString("turno")});
+                }
+            }
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Código de turma não encontrado.");
+        }
+    }
+} catch (java.sql.SQLException ex) {
+    javax.swing.JOptionPane.showMessageDialog(this, "Erro ao editar: " + ex.getMessage());
+}    // TODO add your handling code here:
+    }//GEN-LAST:event_btnEditarTurmaActionPerformed
+
+    private void btnExcluirTurmaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirTurmaActionPerformed
+try {
+    String codigo = txtCodigoTurma.getText().trim();
+
+    if (codigo.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Informe o Código da Turma que deseja excluir.");
+        return;
+    }
+
+    int confirmar = javax.swing.JOptionPane.showConfirmDialog(this, "Deseja realmente excluir a turma " + codigo + "?", "Aviso", javax.swing.JOptionPane.YES_NO_OPTION);
+    if (confirmar != javax.swing.JOptionPane.YES_OPTION) return;
+
+    String sql = "DELETE FROM turma WHERE codigo_turma = ?";
+
+    try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao();
+         java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+        stmt.setString(1, codigo);
+        int deletado = stmt.executeUpdate();
+        
+        if (deletado > 0) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Turma removida com sucesso.");
+            
+            // Atualiza a tabela direto aqui dentro
+            javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tabelaTurmas.getModel();
+            modelo.setNumRows(0);
+            String sqlTab = "SELECT id, codigo_turma, nome_turma, turno FROM turma ORDER BY id DESC";
+            try (java.sql.PreparedStatement stmtTab = conn.prepareStatement(sqlTab);
+                 java.sql.ResultSet rs = stmtTab.executeQuery()) {
+                while (rs.next()) {
+                    modelo.addRow(new Object[]{rs.getInt("id"), rs.getString("codigo_turma"), rs.getString("nome_turma"), rs.getString("turno")});
+                }
+            }
+            txtNomeTurma1.setText("");
+            txtCodigoTurma.setText("");
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Código de turma não encontrado.");
+        }
+    }
+} catch (java.sql.SQLException ex) {
+    javax.swing.JOptionPane.showMessageDialog(this, "Erro ao excluir: " + ex.getMessage());
+}
+
+    }//GEN-LAST:event_btnExcluirTurmaActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -153,7 +289,8 @@ public class PainelTurmas extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTable tabelaTurmas;
     private javax.swing.JTextField txtCodigoTurma;
     private javax.swing.JTextField txtNomeTurma1;
     // End of variables declaration//GEN-END:variables
