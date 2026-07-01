@@ -73,7 +73,7 @@ public class TelaDashboard extends javax.swing.JFrame {
         });
 
         btnMenuNotas.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        btnMenuNotas.setText("Lanar Notas");
+        btnMenuNotas.setText("Lancar Notas");
         btnMenuNotas.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnMenuNotas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -105,7 +105,7 @@ public class TelaDashboard extends javax.swing.JFrame {
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/sistema/gestao/escolar/imagens/icon01.png"))); // NOI18N
 
-        jLabel3.setText("Verso: 1.1.1");
+        jLabel3.setText("Versão: 1.1.1");
 
         javax.swing.GroupLayout pnlMenuLayout = new javax.swing.GroupLayout(pnlMenu);
         pnlMenu.setLayout(pnlMenuLayout);

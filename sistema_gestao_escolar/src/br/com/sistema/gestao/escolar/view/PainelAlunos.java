@@ -93,14 +93,14 @@ public class PainelAlunos extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         tabelaAlunos = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
         cbTurma = new javax.swing.JComboBox<>();
+        jPanel1 = new javax.swing.JPanel();
 
         setPreferredSize(new java.awt.Dimension(940, 556));
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 22)); // NOI18N
-        jLabel1.setText("Gesto de Alunos");
+        jLabel1.setText("Gestão de Alunos");
         add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 20, -1, -1));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
@@ -111,7 +111,7 @@ public class PainelAlunos extends javax.swing.JPanel {
         add(txtMatricula, new org.netbeans.lib.awtextra.AbsoluteConstraints(282, 158, 422, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
-        jLabel3.setText("Matrcula:");
+        jLabel3.setText("Matricula:");
         add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(123, 156, -1, -1));
 
         txtNomeAluno1.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
@@ -156,7 +156,7 @@ public class PainelAlunos extends javax.swing.JPanel {
                 {null, null, null, null}
             },
             new String [] {
-                "ID", "Matrcula", "Nome do Aluno", "Turma"
+                "ID", "Matrícula", "Nome do Aluno", "Turma"
             }
         ));
         jScrollPane1.setViewportView(tabelaAlunos);
@@ -170,12 +170,8 @@ public class PainelAlunos extends javax.swing.JPanel {
         add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(75, 335, 798, 191));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
-        jLabel5.setText("Utilize este painel para cadastrar novos estudantes, vincular turmas obrigatrias e gerenciar os registros da instituio");
+        jLabel5.setText("Utilize este painel para cadastrar novos estudantes, vincular turmas obrigatórias e gerenciar os registros da instituição");
         add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 50, -1, -1));
-
-        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
-        jPanel1.setLayout(new java.awt.BorderLayout());
-        add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 90, 790, 220));
 
         cbTurma.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -183,6 +179,10 @@ public class PainelAlunos extends javax.swing.JPanel {
             }
         });
         add(cbTurma, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 210, 90, 30));
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+        jPanel1.setLayout(new java.awt.BorderLayout());
+        add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 90, 790, 220));
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
