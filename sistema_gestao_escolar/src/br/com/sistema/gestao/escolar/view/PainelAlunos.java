@@ -13,8 +13,28 @@ public class PainelAlunos extends javax.swing.JPanel {
     /**
      * Creates new form PainelAlunos
      */
-    public PainelAlunos() {
-        initComponents();
+   public PainelAlunos() {
+    initComponents();
+    
+    // 1. Alimenta o ComboBox cbTurma com os dados reais da nuvem
+    try {
+        cbTurma.removeAllItems(); // Remove o "Item 1", "Item 2" automático
+        
+        String sqlCombo = "SELECT nome_turma FROM public.turma ORDER BY nome_turma ASC";
+        
+        try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao();
+             java.sql.PreparedStatement stmt = conn.prepareStatement(sqlCombo);
+             java.sql.ResultSet rs = stmt.executeQuery()) {
+            
+            while (rs.next()) {
+                cbTurma.addItem(rs.getString("nome_turma"));
+            }
+        }
+    } catch (Exception ex) {
+        System.out.println("Erro ao carregar combo de turmas: " + ex.getMessage());
+    }
+
+    // 2. Executa a listagem dos alunos que você já tinha configurado
     btnSalvarActionPerformed(null);
 }
 
@@ -68,7 +88,6 @@ public class PainelAlunos extends javax.swing.JPanel {
         add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(123, 204, -1, -1));
 
         cbTurma.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        cbTurma.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cbTurma.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbTurmaActionPerformed(evt);
@@ -137,9 +156,12 @@ public class PainelAlunos extends javax.swing.JPanel {
      try {
     String nome = txtNomeAluno1.getText().trim();
     String matricula = txtMatricula.getText().trim();
-    if (cbTurma.getSelectedItem() == null || nome.isEmpty() || matricula.isEmpty()) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Preencha todos os campos antes de salvar.");
-        return;
+    
+      if (evt != null) {
+        if (cbTurma.getSelectedItem() == null || nome.isEmpty() || matricula.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Preencha todos os campos antes de salvar.");
+            return;
+        }
     }
     String turmaSelecionada = cbTurma.getSelectedItem().toString();
 
