@@ -17,23 +17,23 @@ public class TelaDashboard extends javax.swing.JFrame {
     initComponents();
     this.setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
 
-    // FIX: Cria o CardLayout e injeta explicitamente no seu painel de conteúdo
+    // FIX: Cria o CardLayout e injeta explicitamente no seu painel de contedo
     java.awt.CardLayout cl = new java.awt.CardLayout();
     pnlConteudo.setLayout(cl);
 
-    // 1. Instancia as páginas usando o caminho dos seus pacotes
+    // 1. Instancia as pginas usando o caminho dos seus pacotes
     br.com.sistema.gestao.escolar.view.PainelAlunos telaAlunos = new br.com.sistema.gestao.escolar.view.PainelAlunos();
     br.com.sistema.gestao.escolar.view.PainelTurmas telaTurmas = new br.com.sistema.gestao.escolar.view.PainelTurmas();
     br.com.sistema.gestao.escolar.view.PainelNotas telaNotas = new br.com.sistema.gestao.escolar.view.PainelNotas();
     br.com.sistema.gestao.escolar.view.PainelRelatorios telaRelatorios = new br.com.sistema.gestao.escolar.view.PainelRelatorios();
 
-    // 2. Adiciona os painéis dentro do pnlConteudo associando as tags corretas
+    // 2. Adiciona os painis dentro do pnlConteudo associando as tags corretas
     pnlConteudo.add(telaAlunos, "alunos");
     pnlConteudo.add(telaTurmas, "turmas");
     pnlConteudo.add(telaNotas, "notas");
     pnlConteudo.add(telaRelatorios, "relatorios");
 
-    // 3. Define qual tela abre por padrão quando o Dashboard iniciar
+    // 3. Define qual tela abre por padro quando o Dashboard iniciar
     cl.show(pnlConteudo, "alunos");
 }
 
@@ -73,7 +73,7 @@ public class TelaDashboard extends javax.swing.JFrame {
         });
 
         btnMenuNotas.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        btnMenuNotas.setText("Lançar Notas");
+        btnMenuNotas.setText("Lanar Notas");
         btnMenuNotas.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnMenuNotas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -105,7 +105,7 @@ public class TelaDashboard extends javax.swing.JFrame {
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/sistema/gestao/escolar/imagens/icon01.png"))); // NOI18N
 
-        jLabel3.setText("Versão: 1.1.1");
+        jLabel3.setText("Verso: 1.1.1");
 
         javax.swing.GroupLayout pnlMenuLayout = new javax.swing.GroupLayout(pnlMenu);
         pnlMenu.setLayout(pnlMenuLayout);

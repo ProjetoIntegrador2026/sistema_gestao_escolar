@@ -15,32 +15,105 @@ public class PainelNotas extends javax.swing.JPanel {
      */
     public PainelNotas() {
         initComponents();
-        
-        // 1. Alimenta o ComboBox cbTurmaNotas1 com os dados reais da nuvem
+        carregarTurmasNotas();
+        listarNotas();
+    }
+
+    private void carregarTurmasNotas() {
         try {
-            cbTurmaNotas1.removeAllItems(); // Corrigido de cbTurma para cbTurmaNotas1
-            
-            String sqlCombo = "SELECT nome_turma FROM public.turma ORDER BY nome_turma ASC";
-            
+            cbTurmaNotas1.removeAllItems();
+
+            String sql = "SELECT nome_turma FROM public.turma ORDER BY nome_turma ASC";
+
             try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao();
-                 java.sql.PreparedStatement stmt = conn.prepareStatement(sqlCombo);
+                 java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
                  java.sql.ResultSet rs = stmt.executeQuery()) {
-                
+
                 while (rs.next()) {
-                    cbTurmaNotas1.addItem(rs.getString("nome_turma")); // Corrigido aqui tambÈm
+                    cbTurmaNotas1.addItem(rs.getString("nome_turma"));
+                }
+            }
+
+            carregarAlunosPorTurma();
+        } catch (Exception ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao carregar turmas nas notas: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    private void carregarAlunosPorTurma() {
+        try {
+            cbAlunoNotas.removeAllItems();
+            if (cbTurmaNotas1.getSelectedItem() == null) {
+                return;
+            }
+
+            String turmaSelecionada = cbTurmaNotas1.getSelectedItem().toString();
+            String sql = "SELECT nome FROM public.aluno " +
+                         "WHERE id_turma = (SELECT id FROM public.turma WHERE nome_turma = ? LIMIT 1) " +
+                         "ORDER BY nome ASC";
+
+            try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao();
+                 java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                stmt.setString(1, turmaSelecionada);
+                try (java.sql.ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        cbAlunoNotas.addItem(rs.getString("nome"));
+                    }
                 }
             }
         } catch (Exception ex) {
-            System.out.println("Erro ao carregar turmas nas notas: " + ex.getMessage());
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao carregar alunos: " + ex.getMessage());
+            ex.printStackTrace();
         }
+    }
 
-        // 2. Executa a listagem inicial das notas se o mÈtodo existir
-        // Se a linha abaixo continuar vermelha, comente ela colocando // no inÌcio da linha
+    private void listarNotas() {
         try {
-           btnLancarActionPerformed(null);
-        } catch (Exception e) {
-            // Caso o NetBeans tenha gerado outro nome para o evento do bot„o
+            javax.swing.table.DefaultTableModel modelo =
+                (javax.swing.table.DefaultTableModel) tabelaNotas.getModel();
+            modelo.setNumRows(0);
+
+            String sql = "SELECT a.nome, n.nota1, n.nota2, n.nota3, n.nota4 " +
+                         "FROM public.nota n " +
+                         "JOIN public.aluno a ON n.id_aluno = a.id " +
+                         "ORDER BY a.nome ASC";
+
+            try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao();
+                 java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
+                 java.sql.ResultSet rs = stmt.executeQuery()) {
+
+                while (rs.next()) {
+                    double n1 = rs.getDouble("nota1");
+                    double n2 = rs.getDouble("nota2");
+                    double n3 = rs.getDouble("nota3");
+                    double n4 = rs.getDouble("nota4");
+                    double media = (n1 + n2 + n3 + n4) / 4.0;
+                    String situacao = media >= 7.0 ? "Aprovado" : "Recupera√ß√£o/Reprovado";
+
+                    modelo.addRow(new Object[]{
+                        rs.getString("nome"),
+                        n1,
+                        n2,
+                        n3,
+                        n4,
+                        String.format("%.2f", media),
+                        situacao
+                    });
+                }
+            }
+        } catch (Exception ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao listar notas: " + ex.getMessage());
+            ex.printStackTrace();
         }
+    }
+
+    private void limparCamposNotas() {
+        txtNota1.setText("");
+        txtNota2.setText("");
+        txtNota3.setText("");
+        txtNota4.setText("");
     } 
 
     /**
@@ -80,21 +153,21 @@ public class PainelNotas extends javax.swing.JPanel {
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 22)); // NOI18N
-        jLabel1.setText("LanÁamento de Notas");
+        jLabel1.setText("Lanamento de Notas");
         add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 10, -1, -1));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
-        jLabel5.setText("Selecione a turma e o aluno para realizar o lanÁamento das notas bimestrais. A mÈdia e a situaÁ„o s„o calculadas automaticamente.");
+        jLabel5.setText("Selecione a turma e o aluno para realizar o lanamento das notas bimestrais. A mdia e a situao so calculadas automaticamente.");
         add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 40, 584, -1));
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 22)); // NOI18N
-        jLabel2.setText("LanÁamento de Notas");
+        jLabel2.setText("Lanamento de Notas");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 10, -1, -1));
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
-        jLabel6.setText("Selecione a turma e o aluno para realizar o lanÁamento das notas bimestrais. A mÈdia e a situaÁ„o s„o calculadas automaticamente.");
+        jLabel6.setText("Selecione a turma e o aluno para realizar o lanamento das notas bimestrais. A mdia e a situao so calculadas automaticamente.");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 40, 584, -1));
 
         add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
@@ -102,11 +175,11 @@ public class PainelNotas extends javax.swing.JPanel {
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 22)); // NOI18N
-        jLabel7.setText("LanÁamento de Notas");
+        jLabel7.setText("Lanamento de Notas");
         jPanel2.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 10, -1, -1));
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
-        jLabel8.setText("Selecione a turma e o aluno para realizar o lanÁamento das notas bimestrais. A mÈdia e a situaÁ„o s„o calculadas automaticamente.");
+        jLabel8.setText("Selecione a turma e o aluno para realizar o lanamento das notas bimestrais. A mdia e a situao so calculadas automaticamente.");
         jPanel2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 40, 584, -1));
 
         add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
@@ -212,7 +285,7 @@ public class PainelNotas extends javax.swing.JPanel {
                 {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Aluno", "Nota 01", "Nota 02", "Nota 03", "Nota 04", "MÈdia Final", "SituaÁ„o"
+                "Aluno", "Nota 01", "Nota 02", "Nota 03", "Nota 04", "Mdia Final", "Situao"
             }
         ));
         jScrollPane1.setViewportView(tabelaNotas);
@@ -242,18 +315,17 @@ public class PainelNotas extends javax.swing.JPanel {
     }//GEN-LAST:event_txtNota1ActionPerformed
 
     private void btnLancarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLancarActionPerformed
-                                       
-    try {
-        // 1. TRAVA DE SEGURAN«A: SÛ tenta ler campos e gravar se for um clique real (evt n„o È nulo)
-        if (evt != null) {
-            
-            // ValidaÁ„o de campos vazios
-            if (cbAlunoNotas.getSelectedItem() == null || txtNota1.getText().isEmpty() || txtNota2.getText().isEmpty() || txtNota3.getText().isEmpty() || txtNota4.getText().isEmpty()) {
+        try {
+            if (cbAlunoNotas.getSelectedItem() == null ||
+                txtNota1.getText().trim().isEmpty() ||
+                txtNota2.getText().trim().isEmpty() ||
+                txtNota3.getText().trim().isEmpty() ||
+                txtNota4.getText().trim().isEmpty()) {
+
                 javax.swing.JOptionPane.showMessageDialog(this, "Preencha todos os campos antes de salvar.");
                 return;
             }
-            
-            // Toda a convers„o numÈrica e inserÁ„o no banco FICA AQUI DENTRO, protegida!
+
             String alunoNome = cbAlunoNotas.getSelectedItem().toString();
             double n1 = Double.parseDouble(txtNota1.getText().trim().replace(",", "."));
             double n2 = Double.parseDouble(txtNota2.getText().trim().replace(",", "."));
@@ -263,76 +335,38 @@ public class PainelNotas extends javax.swing.JPanel {
 
             String sql = "INSERT INTO public.nota (id_aluno, nota1, nota2, nota3, nota4) " +
                          "VALUES ((SELECT id FROM public.aluno WHERE nome = ? LIMIT 1), ?, ?, ?, ?) " +
-                         "ON CONFLICT (id_aluno) DO UPDATE SET nota1 = EXCLUDED.nota1, nota2 = EXCLUDED.nota2, nota3 = EXCLUDED.nota3, nota4 = EXCLUDED.nota4";
+                         "ON CONFLICT (id_aluno) DO UPDATE SET " +
+                         "nota1 = EXCLUDED.nota1, nota2 = EXCLUDED.nota2, " +
+                         "nota3 = EXCLUDED.nota3, nota4 = EXCLUDED.nota4";
 
             try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao();
                  java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
-                
+
                 stmt.setString(1, alunoNome);
                 stmt.setDouble(2, n1);
                 stmt.setDouble(3, n2);
                 stmt.setDouble(4, n3);
                 stmt.setDouble(5, n4);
                 stmt.executeUpdate();
-                
-                javax.swing.JOptionPane.showMessageDialog(this, "Notas gravadas com sucesso! MÈdia: " + String.format("%.2f", media));
             }
-        }
 
-        // 2. FORA DA TRAVA: A atualizaÁ„o da tabela roda tanto no clique quanto na abertura (null)!
-        javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tabelaNotas.getModel();
-        modelo.setNumRows(0);
-        
-        String sqlTab = "SELECT a.nome, n.nota1, n.nota2, n.nota3, n.nota4 FROM public.nota n JOIN public.aluno a ON n.id_aluno = a.id ORDER BY a.nome ASC";
-        
-        try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao();
-             java.sql.PreparedStatement stmtTab = conn.prepareStatement(sqlTab);
-             java.sql.ResultSet rs = stmtTab.executeQuery()) {
-            
-            while (rs.next()) {
-                double t1 = rs.getDouble("nota1");
-                double t2 = rs.getDouble("nota2");
-                double t3 = rs.getDouble("nota3");
-                double t4 = rs.getDouble("nota4");
-                double m = (t1 + t2 + t3 + t4) / 4.0;
-                modelo.addRow(new Object[]{rs.getString("nome"), t1, t2, t3, t4, String.format("%.2f", m), m >= 7.0 ? "Aprovado" : "Reprovado"});
-            }
-        }
+            javax.swing.JOptionPane.showMessageDialog(this, "Notas gravadas com sucesso! M√©dia: " + String.format("%.2f", media));
+            limparCamposNotas();
+            listarNotas();
 
-    } catch (Exception ex) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Erro ao gravar notas: " + ex.getMessage());
-    }
-      // TODO add your handling code here:
-    }//GEN-LAST:event_btnLancarActionPerformed
+        } catch (NumberFormatException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Digite apenas n√∫meros v√°lidos nas notas.");
+        } catch (Exception ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao gravar notas: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_btnLancarActionPerformed//GEN-LAST:event_btnLancarActionPerformed
 
     private void cbTurmaNotas1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbTurmaNotas1ItemStateChanged
-                                              
-    if (evt.getStateChange() == java.awt.event.ItemEvent.SELECTED) {
-        if (cbTurmaNotas1.getSelectedItem() == null) return;
-        
-        String turmaSelecionada = cbTurmaNotas1.getSelectedItem().toString();
-        
-        try {
-            cbAlunoNotas.removeAllItems(); // Garanta que este È o nome do combo de alunos nesta tela
-            
-            String sql = "SELECT nome FROM public.aluno WHERE id_turma = (SELECT id FROM public.turma WHERE nome_turma = ? LIMIT 1) ORDER BY nome ASC";
-            
-            try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao();
-                 java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
-                
-                stmt.setString(1, turmaSelecionada);
-                try (java.sql.ResultSet rs = stmt.executeQuery()) {
-                    while (rs.next()) {
-                        cbAlunoNotas.addItem(rs.getString("nome"));
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            System.out.println("Erro ao carregar alunos filtrados: " + ex.getMessage());
+        if (evt.getStateChange() == java.awt.event.ItemEvent.SELECTED) {
+            carregarAlunosPorTurma();
         }
-    }
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cbTurmaNotas1ItemStateChanged
+    }//GEN-LAST:event_cbTurmaNotas1ItemStateChanged//GEN-LAST:event_cbTurmaNotas1ItemStateChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

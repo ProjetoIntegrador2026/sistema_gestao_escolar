@@ -47,7 +47,7 @@ public class TelaLogin extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Sistema de Gestão Escolar - by Jovem Programador (Rubens, Ederson, Edson)");
+        setTitle("Sistema de Gesto Escolar - by Jovem Programador (Rubens, Ederson, Edson)");
 
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -60,7 +60,7 @@ public class TelaLogin extends javax.swing.JFrame {
         jLabel1.setText("SGE - Login");
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel2.setText("Usuário:");
+        jLabel2.setText("Usurio:");
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel3.setText("Senha:");
@@ -70,7 +70,7 @@ public class TelaLogin extends javax.swing.JFrame {
         txtSenha.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel4.setText("Conecte-se à sua conta");
+        jLabel4.setText("Conecte-se  sua conta");
 
         btnEntrar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnEntrar.setText("ENTRAR");
@@ -80,7 +80,7 @@ public class TelaLogin extends javax.swing.JFrame {
             }
         });
 
-        btnIrParaCadastro.setText("Não tem conta? Cadastre-se aqui");
+        btnIrParaCadastro.setText("No tem conta? Cadastre-se aqui");
         btnIrParaCadastro.setBorderPainted(false);
         btnIrParaCadastro.setContentAreaFilled(false);
         btnIrParaCadastro.addActionListener(new java.awt.event.ActionListener() {
@@ -222,11 +222,11 @@ public class TelaLogin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnIrParaCadastroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIrParaCadastroActionPerformed
-// Abre uma caixinha rápida para o usuário criar as credenciais do zero
-String novoUsuario = javax.swing.JOptionPane.showInputDialog(this, "Digite o nome do novo usuário:");
+// Abre uma caixinha rpida para o usurio criar as credenciais do zero
+String novoUsuario = javax.swing.JOptionPane.showInputDialog(this, "Digite o nome do novo usurio:");
 if (novoUsuario == null || novoUsuario.trim().isEmpty()) return;
 
-String novaSenha = javax.swing.JOptionPane.showInputDialog(this, "Digite a senha para o usuário " + novoUsuario + ":");
+String novaSenha = javax.swing.JOptionPane.showInputDialog(this, "Digite a senha para o usurio " + novoUsuario + ":");
 if (novaSenha == null || novaSenha.trim().isEmpty()) return;
 
 
@@ -235,23 +235,23 @@ String sql = "INSERT INTO usuarios (usuario, senha) VALUES (?, ?);";
 try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao();
      java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
     
-    // Injeta as variáveis de texto com segurança nas interrogações (?) do SQL
+    // Injeta as variveis de texto com segurana nas interrogaes (?) do SQL
     stmt.setString(1, novoUsuario.trim());
     stmt.setString(2, novaSenha.trim());
     
-    // Executa a gravação no servidor do Render
+    // Executa a gravao no servidor do Render
     int linhasAfetadas = stmt.executeUpdate();
     
     if (linhasAfetadas > 0) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Usuário " + novoUsuario + " cadastrado com sucesso na nuvem!");
+        javax.swing.JOptionPane.showMessageDialog(this, "Usurio " + novoUsuario + " cadastrado com sucesso na nuvem!");
     } else {
-        javax.swing.JOptionPane.showMessageDialog(this, "Não foi possível cadastrar o usuário.");
+        javax.swing.JOptionPane.showMessageDialog(this, "No foi possvel cadastrar o usurio.");
     }
 
 } catch (java.sql.SQLException ex) {
-    // Se o usuário já existir ou der erro de rede, avisa na tela
+    // Se o usurio j existir ou der erro de rede, avisa na tela
     if (ex.getMessage().contains("duplicate key")) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Erro: O usuário '" + novoUsuario + "' já existe!");
+        javax.swing.JOptionPane.showMessageDialog(this, "Erro: O usurio '" + novoUsuario + "' j existe!");
     } else {
         javax.swing.JOptionPane.showMessageDialog(this, "Erro ao gravar no banco: " + ex.getMessage());
     }
@@ -303,7 +303,7 @@ try {
         TelaDashboard dashboard = new TelaDashboard();
         dashboard.setVisible(true);
     } else {
-        javax.swing.JOptionPane.showMessageDialog(this, "Usuário ou senha incorretos!");
+        javax.swing.JOptionPane.showMessageDialog(this, "Usurio ou senha incorretos!");
     }
     
     rs.close();

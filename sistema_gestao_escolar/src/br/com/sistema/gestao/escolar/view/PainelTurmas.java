@@ -15,8 +15,41 @@ public class PainelTurmas extends javax.swing.JPanel {
      */
     public PainelTurmas() {
         initComponents();
-    btnSalvarTurmaActionPerformed(null); 
-}
+        listarTurmas();
+    }
+
+    private void listarTurmas() {
+        try {
+            javax.swing.table.DefaultTableModel modelo =
+                (javax.swing.table.DefaultTableModel) tabelaTurmas.getModel();
+            modelo.setNumRows(0);
+
+            String sql = "SELECT id, codigo_turma, nome_turma, turno FROM public.turma ORDER BY id DESC";
+
+            try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao();
+                 java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
+                 java.sql.ResultSet rs = stmt.executeQuery()) {
+
+                while (rs.next()) {
+                    modelo.addRow(new Object[]{
+                        rs.getInt("id"),
+                        rs.getString("codigo_turma"),
+                        rs.getString("nome_turma"),
+                        rs.getString("turno")
+                    });
+                }
+            }
+        } catch (Exception ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao listar turmas: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    private void limparCamposTurma() {
+        txtNomeTurma1.setText("");
+        txtCodigoTurma.setText("");
+        cbPeriodo.setSelectedIndex(0);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -46,15 +79,15 @@ public class PainelTurmas extends javax.swing.JPanel {
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 22)); // NOI18N
-        jLabel1.setText("Gestão de Turmas");
+        jLabel1.setText("Gesto de Turmas");
         add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 10, -1, -1));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
-        jLabel5.setText("Gerencie as turmas da instituição, defina códigos de identificação exclusivos e associe os períodos letivos");
+        jLabel5.setText("Gerencie as turmas da instituio, defina cdigos de identificao exclusivos e associe os perodos letivos");
         add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 40, 584, -1));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
-        jLabel2.setText("Período/Turno:");
+        jLabel2.setText("Perodo/Turno:");
         add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(109, 214, -1, -1));
 
         txtCodigoTurma.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
@@ -115,7 +148,7 @@ public class PainelTurmas extends javax.swing.JPanel {
                 {null, null, null, null}
             },
             new String [] {
-                "ID", "Código", "Nome da Turma", "Período"
+                "ID", "Cdigo", "Nome da Turma", "Perodo"
             }
         ));
         jScrollPane1.setViewportView(tabelaTurmas);
@@ -150,131 +183,112 @@ public class PainelTurmas extends javax.swing.JPanel {
     }//GEN-LAST:event_cbPeriodoActionPerformed
 
     private void btnSalvarTurmaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarTurmaActionPerformed
-try {
-    String nome = txtNomeTurma1.getText().trim();
-    String codigo = txtCodigoTurma.getText().trim();
-    if (cbPeriodo.getSelectedItem() == null || nome.isEmpty() || codigo.isEmpty()) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Preencha todos os campos antes de salvar.");
-        return;
-    }
-    String periodo = cbPeriodo.getSelectedItem().toString();
+        try {
+            String nome = txtNomeTurma1.getText().trim();
+            String codigo = txtCodigoTurma.getText().trim();
 
-    String sql = "INSERT INTO turma (codigo_turma, nome_turma, turno) VALUES (?, ?, ?)";
+            if (cbPeriodo.getSelectedItem() == null || nome.isEmpty() || codigo.isEmpty() || cbPeriodo.getSelectedItem().toString().equals("-")) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Preencha todos os campos antes de salvar.");
+                return;
+            }
 
-    try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao();
-         java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
-        
-        stmt.setString(1, codigo);
-        stmt.setString(2, nome);
-        stmt.setString(3, periodo);
-        stmt.executeUpdate();
-        
-        javax.swing.JOptionPane.showMessageDialog(this, "Turma cadastrada com sucesso!");
-        
-        // Atualiza a tabela dinamicamente
-       // Atualiza a tabela direto aqui dentro
-javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tabelaTurmas.getModel();
-modelo.setNumRows(0);
-String sqlTab = "SELECT id, codigo_turma, nome_turma, turno FROM turma ORDER BY id DESC";
-try (java.sql.PreparedStatement stmtTab = conn.prepareStatement(sqlTab);
-     java.sql.ResultSet rs = stmtTab.executeQuery()) {
-    while (rs.next()) {
-        modelo.addRow(new Object[]{rs.getInt("id"), rs.getString("codigo_turma"), rs.getString("nome_turma"), rs.getString("turno")});
-    }
-}
-    }
-} catch (java.sql.SQLException ex) {
-    javax.swing.JOptionPane.showMessageDialog(this, "Erro no banco da Render: " + ex.getMessage());
-}        // TODO add your handling code here:
-    }//GEN-LAST:event_btnSalvarTurmaActionPerformed
+            String periodo = cbPeriodo.getSelectedItem().toString();
+            String sql = "INSERT INTO public.turma (codigo_turma, nome_turma, turno) VALUES (?, ?, ?)";
+
+            try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao();
+                 java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                stmt.setString(1, codigo);
+                stmt.setString(2, nome);
+                stmt.setString(3, periodo);
+                stmt.executeUpdate();
+            }
+
+            javax.swing.JOptionPane.showMessageDialog(this, "Turma cadastrada com sucesso!");
+            limparCamposTurma();
+            listarTurmas();
+
+        } catch (Exception ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao salvar turma: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_btnSalvarTurmaActionPerformed//GEN-LAST:event_btnSalvarTurmaActionPerformed
 
     private void btnEditarTurmaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarTurmaActionPerformed
-try {
-    String nome = txtNomeTurma1.getText().trim();
-    String codigo = txtCodigoTurma.getText().trim();
-    String periodo = cbPeriodo.getSelectedItem().toString();
+        try {
+            String nome = txtNomeTurma1.getText().trim();
+            String codigo = txtCodigoTurma.getText().trim();
 
-    if (codigo.isEmpty()) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Informe o Código da Turma que deseja editar.");
-        return;
-    }
+            if (codigo.isEmpty() || nome.isEmpty() || cbPeriodo.getSelectedItem() == null || cbPeriodo.getSelectedItem().toString().equals("-")) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Informe cÃ³digo, nome e perÃ­odo da turma para editar.");
+                return;
+            }
 
-    String sql = "UPDATE turma SET nome_turma = ?, turno = ? WHERE codigo_turma = ?";
+            String periodo = cbPeriodo.getSelectedItem().toString();
+            String sql = "UPDATE public.turma SET nome_turma = ?, turno = ? WHERE codigo_turma = ?";
 
-    try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao();
-         java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
-        
-        stmt.setString(1, nome);
-        stmt.setString(2, periodo);
-        stmt.setString(3, codigo);
-        
-        int atualizado = stmt.executeUpdate();
-        if (atualizado > 0) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Turma atualizada com sucesso!");
-            
-            // Atualiza a tabela direto aqui dentro
-            javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tabelaTurmas.getModel();
-            modelo.setNumRows(0);
-            String sqlTab = "SELECT id, codigo_turma, nome_turma, turno FROM turma ORDER BY id DESC";
-            try (java.sql.PreparedStatement stmtTab = conn.prepareStatement(sqlTab);
-                 java.sql.ResultSet rs = stmtTab.executeQuery()) {
-                while (rs.next()) {
-                    modelo.addRow(new Object[]{rs.getInt("id"), rs.getString("codigo_turma"), rs.getString("nome_turma"), rs.getString("turno")});
+            try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao();
+                 java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                stmt.setString(1, nome);
+                stmt.setString(2, periodo);
+                stmt.setString(3, codigo);
+
+                int atualizado = stmt.executeUpdate();
+                if (atualizado > 0) {
+                    javax.swing.JOptionPane.showMessageDialog(this, "Turma atualizada com sucesso!");
+                    limparCamposTurma();
+                    listarTurmas();
+                } else {
+                    javax.swing.JOptionPane.showMessageDialog(this, "CÃ³digo de turma nÃ£o encontrado.");
                 }
             }
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "Código de turma não encontrado.");
+        } catch (Exception ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao editar turma: " + ex.getMessage());
+            ex.printStackTrace();
         }
-    }
-} catch (java.sql.SQLException ex) {
-    javax.swing.JOptionPane.showMessageDialog(this, "Erro ao editar: " + ex.getMessage());
-}    // TODO add your handling code here:
-    }//GEN-LAST:event_btnEditarTurmaActionPerformed
+    }//GEN-LAST:event_btnEditarTurmaActionPerformed//GEN-LAST:event_btnEditarTurmaActionPerformed
 
     private void btnExcluirTurmaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirTurmaActionPerformed
-try {
-    String codigo = txtCodigoTurma.getText().trim();
+        try {
+            String codigo = txtCodigoTurma.getText().trim();
 
-    if (codigo.isEmpty()) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Informe o Código da Turma que deseja excluir.");
-        return;
-    }
+            if (codigo.isEmpty()) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Informe o CÃ³digo da Turma que deseja excluir.");
+                return;
+            }
 
-    int confirmar = javax.swing.JOptionPane.showConfirmDialog(this, "Deseja realmente excluir a turma " + codigo + "?", "Aviso", javax.swing.JOptionPane.YES_NO_OPTION);
-    if (confirmar != javax.swing.JOptionPane.YES_OPTION) return;
+            int confirmar = javax.swing.JOptionPane.showConfirmDialog(
+                this,
+                "Deseja realmente excluir a turma " + codigo + "?",
+                "Aviso",
+                javax.swing.JOptionPane.YES_NO_OPTION
+            );
+            if (confirmar != javax.swing.JOptionPane.YES_OPTION) {
+                return;
+            }
 
-    String sql = "DELETE FROM turma WHERE codigo_turma = ?";
+            String sql = "DELETE FROM public.turma WHERE codigo_turma = ?";
 
-    try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao();
-         java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
-        
-        stmt.setString(1, codigo);
-        int deletado = stmt.executeUpdate();
-        
-        if (deletado > 0) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Turma removida com sucesso.");
-            
-            // Atualiza a tabela direto aqui dentro
-            javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tabelaTurmas.getModel();
-            modelo.setNumRows(0);
-            String sqlTab = "SELECT id, codigo_turma, nome_turma, turno FROM turma ORDER BY id DESC";
-            try (java.sql.PreparedStatement stmtTab = conn.prepareStatement(sqlTab);
-                 java.sql.ResultSet rs = stmtTab.executeQuery()) {
-                while (rs.next()) {
-                    modelo.addRow(new Object[]{rs.getInt("id"), rs.getString("codigo_turma"), rs.getString("nome_turma"), rs.getString("turno")});
+            try (java.sql.Connection conn = br.com.sistema.gestao.escolar.factory.Conexao.getConexao();
+                 java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                stmt.setString(1, codigo);
+                int deletado = stmt.executeUpdate();
+
+                if (deletado > 0) {
+                    javax.swing.JOptionPane.showMessageDialog(this, "Turma removida com sucesso.");
+                    limparCamposTurma();
+                    listarTurmas();
+                } else {
+                    javax.swing.JOptionPane.showMessageDialog(this, "CÃ³digo de turma nÃ£o encontrado.");
                 }
             }
-            txtNomeTurma1.setText("");
-            txtCodigoTurma.setText("");
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "Código de turma não encontrado.");
+        } catch (Exception ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao excluir turma: " + ex.getMessage());
+            ex.printStackTrace();
         }
-    }
-} catch (java.sql.SQLException ex) {
-    javax.swing.JOptionPane.showMessageDialog(this, "Erro ao excluir: " + ex.getMessage());
-}
-
-    }//GEN-LAST:event_btnExcluirTurmaActionPerformed
+    }//GEN-LAST:event_btnExcluirTurmaActionPerformed//GEN-LAST:event_btnExcluirTurmaActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
